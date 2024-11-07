@@ -244,6 +244,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponRoot: {fileID: 1505447205160222267}
   switchWeaponSfx: {fileID: 8300000, guid: 70dcbe7592dd1c748b41e27c91a48302, type: 3}
+  shootType: 0
+  maxAmmo: 8
+  delayBetweenShots: 0.5
+  lastTimeShot: 0
+  weaponMuzzle: {fileID: 8334323006752503713}
+  muzzleFlashPrefab: {fileID: 748781637555137343, guid: 4f5d4e5eaa0e5104791549cea3dc3f23,
+    type: 3}
+  shootSfx: {fileID: 8300000, guid: 8e22a6f096cfdf7418c53b019c7171e0, type: 3}
   crossHairDefault:
     CrossHairSprite: {fileID: 21300000, guid: 1b18da7c257c55f408858efd716847d0, type: 3}
     CrossHairSize: 40
@@ -254,6 +262,9 @@ MonoBehaviour:
     CrossHairColor: {r: 0, g: 0.42681122, b: 1, a: 1}
   aimZoomRatio: 0.7
   aimPositionOffset: {x: 0, y: 0.13, z: 0}
+  recoilForce: 0.5
+  projectilePrefab: {fileID: 1099788227586793320, guid: f05c7e6fbbfbe824388456bb4abff9d4,
+    type: 3}
 --- !u!1 &2867801751256125023
 GameObject:
   m_ObjectHideFlags: 0
