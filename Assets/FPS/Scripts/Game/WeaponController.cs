@@ -1,6 +1,8 @@
 using System;
+using System.Runtime.CompilerServices;
 using Unity.FPS.Gameplay;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Unity.FPS.Game
 {
@@ -69,9 +71,14 @@ namespace Unity.FPS.Game
 
         //Projectile
         public ProjectileBase projectilePrefab;
-        public Vector3 MuzzleWorldVelocity { get; private set; }
+        public Vector3 MuzzleWorldVelocity { get; private set; }        // 현재 프레임에서의 구동 속도
         private Vector3 lastMuzzlePosition;
         public float CurrentCharge { get; private set; }
+
+        [SerializeField] private int bulletsPerShot = 1; // 한 번 슛하는 데 발사되는 탄환 수
+        [SerializeField] private float bulletSpreadAngle = 0f;   //불렛이 퍼저나가는 각도
+
+        public float CurrentAmmoRatio => currentAmmo / maxAmmo;
         #endregion
 
         void Awake()
@@ -85,6 +92,19 @@ namespace Unity.FPS.Game
             // 초기화
             currentAmmo = maxAmmo;
             lastTimeShot = Time.time;
+            lastMuzzlePosition = weaponMuzzle.position;
+        }
+
+        void Update()
+        {
+            //MuzzleWorldVelocity
+            if(Time.deltaTime > 0)
+            {
+                MuzzleWorldVelocity = (weaponMuzzle.position - lastMuzzlePosition) / Time.deltaTime;
+
+                lastMuzzlePosition = weaponMuzzle.position;
+            }
+
         }
     
         // 무기 활성화, 비활성화
@@ -151,6 +171,16 @@ namespace Unity.FPS.Game
         // 슛 연출
         void HandleShoot()
         {
+
+            //project tile 생성
+            for(int i = 0; i < bulletsPerShot; i++)
+            {
+                Vector3 shotDirection = GetShotDirectionWithinSpread(weaponMuzzle);
+                
+                ProjectileBase projectileInstance = Instantiate(projectilePrefab, weaponMuzzle.position, Quaternion.LookRotation(shotDirection));
+                projectileInstance.Shoot(this);
+                
+            }
             //Vfx
             if(muzzleFlashPrefab)
             {
@@ -165,6 +195,12 @@ namespace Unity.FPS.Game
             }
 
             lastTimeShot = Time.time;
+        }
+        //project tile 방향
+        Vector3 GetShotDirectionWithinSpread(Transform shootTransform)
+        {
+            float spreadAngleRatio = bulletSpreadAngle / 180f; 
+            return Vector3.Lerp(shootTransform.forward, UnityEngine.Random.insideUnitSphere, spreadAngleRatio);
         }
     }
 }

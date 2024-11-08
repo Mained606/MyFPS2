@@ -146,7 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponRoot: {fileID: 5646165488041817916}
   switchWeaponSfx: {fileID: 8300000, guid: 70dcbe7592dd1c748b41e27c91a48302, type: 3}
-  shootType: 2
+  shootType: 0
   maxAmmo: 8
   delayBetweenShots: 0.5
   lastTimeShot: 0
@@ -166,6 +166,8 @@ MonoBehaviour:
   recoilForce: 0.5
   projectilePrefab: {fileID: 3775632570833938171, guid: 0e23901b938cf4f4eb86850d912715eb,
     type: 3}
+  bulletsPerShot: 1
+  bulletSpreadAngle: 0
 --- !u!1 &2990922162098100101
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,7 +15,7 @@ namespace Unity.FPS.Game
         public Vector3 InheritedMuzzleVelocity { get; private set; } // 발사체에 상속된 총구 속도
         public float InitialCharge { get; private set; } // 발사체의 초기 충전량
 
-        public UnityEvent OnShoot; // 발사 이벤트
+        public UnityAction OnShoot; // 발사 이벤트
         #endregion
 
         public void Shoot(WeaponController controller)
