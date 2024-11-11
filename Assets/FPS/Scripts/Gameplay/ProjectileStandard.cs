@@ -16,8 +16,8 @@ namespace Unity.FPS.Gameplay
         private float maxLifeTime = 5f;
 
         // 이동
-        [SerializeField] private float speed = 20f;
-        [SerializeField] private float gravityDown = 0f;
+        public float speed = 20f;
+        public  float gravityDown = 0f;
         public Transform root;
         public Transform tip;
 
@@ -26,7 +26,7 @@ namespace Unity.FPS.Gameplay
         private float shootTime;
 
         // 충돌
-        private float radius = 0.01f;           // 충돌 검사하는 구체의 반경
+        public float radius = 0.01f;           // 충돌 검사하는 구체의 반경
         public LayerMask hittableLayers = -1;   // Hit가 가능한 Layer
         private List<Collider> ignoredColliers; // Hit 판정시 무시하는 충돌체 리스트
         
@@ -36,6 +36,8 @@ namespace Unity.FPS.Gameplay
         private float impactVfxSpawnOffset = 0.1f;
 
         public AudioClip impactSfxClip;             // 타격음
+
+        public float damage = 20f;
         #endregion
 
         private void OnEnable()
