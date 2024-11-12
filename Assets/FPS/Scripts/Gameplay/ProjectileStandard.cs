@@ -38,13 +38,15 @@ namespace Unity.FPS.Gameplay
         public AudioClip impactSfxClip;             // 타격음
 
         public float damage = 20f;
+        private DamageArea damageArea;
         #endregion
 
         private void OnEnable()
         {
             projectileBase = GetComponent<ProjectileBase>();
-
             projectileBase.OnShoot += OnShoot;
+
+            damageArea = GetComponent<DamageArea>();
 
             Destroy(gameObject, maxLifeTime);
         }
@@ -152,6 +154,21 @@ namespace Unity.FPS.Gameplay
         // Hit 구현, 데미지, Vfx, Sfx
         private void OnHit(Vector3 point, Vector3 normal, Collider collider)
         {
+            // 데미지
+            if(damageArea)
+            {
+                damageArea.InflictDamageArea(damage, point, hittableLayers, QueryTriggerInteraction.Collide, projectileBase.Owner);
+            }
+            else
+            {
+                Damageable damageable = collider.GetComponent<Damageable>();
+                if(damageable)
+                {
+                    damageable.InflictDamege(damage, false, projectileBase.Owner);
+                }
+            }
+
+
             //Vfx
             if(impactVfxPrefab)
             {
@@ -165,6 +182,7 @@ namespace Unity.FPS.Gameplay
             // Sfx
             if(impactSfxClip)
             {
+                //충돌위치에 게임오브젝트을 생성하고 AudioSource 컴포넌트를 추가해서 지정된 클립을 플레이한다
                 AudioUtility.CreateSfx(impactSfxClip, point, 1f, 3f);
             }
 

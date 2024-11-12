@@ -51,7 +51,7 @@ namespace Unity.FPS.Game
         private float currentAmmo;                         // 현재 총알 갯수
 
         [SerializeField] private float delayBetweenShots = 0.5f; // 총알 발사 간격
-        [SerializeField] private float lastTimeShot;       // 마지막 총알 발사 시간
+        private float lastTimeShot;       // 마지막 총알 발사 시간
 
         // Vfx, Sfx
         public Transform weaponMuzzle;
@@ -88,8 +88,14 @@ namespace Unity.FPS.Game
 
         public float lastChargeTriggerTimestamp;    // 충전 시작 시간
 
-        public float CurrentAmmoRatio => currentAmmo / maxAmmo;
+        // Reload: 재장전
+        [SerializeField] private float ammoReloadRate = 1f;     // 초당 재장전되는 량
+        [SerializeField] private float ammoReloadDelay = 2f;    // 슛한 다음 ammoReloadDelay가 지난후에 재장전 가능
+
+        [SerializeField] private bool automaticReload = true;   //자동, 수동 구분
         #endregion
+
+        public float CurrentAmmoRatio => currentAmmo / maxAmmo;
 
         void Awake()
         {
@@ -107,8 +113,8 @@ namespace Unity.FPS.Game
 
         void Update()
         {
-            // 충전
-            UpdateCharge();
+            UpdateCharge(); // 충전
+            UpdateAmmo();
 
             //MuzzleWorldVelocity
             if(Time.deltaTime > 0)
@@ -119,6 +125,29 @@ namespace Unity.FPS.Game
             }
 
         }
+
+        // Reload - Auto
+        private void UpdateAmmo()
+        {
+            // 재장전
+            if(automaticReload && currentAmmo < maxAmmo && IsCharging == false && lastTimeShot + ammoReloadDelay < Time.time)
+            {
+                currentAmmo += ammoReloadRate * Time.deltaTime; // 초당 ammoReloadRate량 재장전
+                currentAmmo = Mathf.Clamp(currentAmmo, 0, maxAmmo);
+            }
+        }
+
+
+        // Reload - 수동
+        public void Reload()
+        {
+            if(automaticReload || currentAmmo >= maxAmmo || IsCharging)
+            {
+                return;
+            }
+            currentAmmo = maxAmmo;
+        }
+
 
         // 충전
         private void UpdateCharge()

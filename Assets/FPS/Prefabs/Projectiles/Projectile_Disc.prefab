@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3775632570833938171}
   - component: {fileID: 5425632821808650279}
   - component: {fileID: 378335856022487399}
+  - component: {fileID: 7912941036180368453}
   m_Layer: 0
   m_Name: Projectile_Disc
   m_TagString: Untagged
@@ -99,8 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0627d0dc2ba90fd468c4f0435a17e3e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 150
-  gravityDown: 20
+  speed: 30
+  gravityDown: 10
   root: {fileID: 106790115311484948}
   tip: {fileID: 106790115311484948}
   radius: 0.01
@@ -152,6 +153,52 @@ MonoBehaviour:
   scale:
     Min: {x: 0.5, y: 0.5, z: 0.5}
     Max: {x: 0.8, y: 0.8, z: 0.8}
+--- !u!114 &7912941036180368453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106790115311484953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92bcad62f32feb145a79788c49ac30a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  areaOfEffectDistance: 50
+  damageRatioOverDistance:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -0.33508024
+      outSlope: -0.33508024
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.74922794
+      value: 0.7489485
+      inSlope: -0.84022033
+      outSlope: -0.84022033
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0166626
+      value: 0.38915253
+      inSlope: -1.3453604
+      outSlope: -1.3453604
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1945832826066038730
 GameObject:
   m_ObjectHideFlags: 0
