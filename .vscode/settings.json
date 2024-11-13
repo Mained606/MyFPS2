@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "MyFPS2_Learn.sln"
+    "dotnet.defaultSolution": "MyFPS2_Learn.sln",
+    "dotnet.preferCSharpExtension": true
 }

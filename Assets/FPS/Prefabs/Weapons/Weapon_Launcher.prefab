@@ -206,7 +206,7 @@ MonoBehaviour:
     Max: 1500
   chargeSound: {fileID: 8300000, guid: dc82a838adc71cd44b31c1b3ccf9dad3, type: 3}
   loopChargeWeaponSfx: {fileID: 8300000, guid: d0f331d8524a0d4409af0cddefe91112, type: 3}
-  useProceduralPitchOnLoop: 1
+  useProceduralPitchOnLoop: 0
   maxProceduralPitchValue: 2
 --- !u!1 &2990922162098100101
 GameObject:
