@@ -90,11 +90,11 @@ namespace Unity.FPS.Gameplay
             chargingObject.transform.localScale = scale.GetValueFromRatio(chargeRatio);
             if(spiningFrame)
             {
-                spiningFrame.transform.localRotation *= Quaternion.Euler(0f, spiningSpeed.getValueFromRatio(chargeRatio) * Time.deltaTime, 0f);
+                spiningFrame.transform.localRotation *= Quaternion.Euler(0f, spiningSpeed.GetValueFromRatio(chargeRatio) * Time.deltaTime, 0f);
             }
 
             // Vfx particle
-            velocityOverLifetimeModule.orbitalY = orbitY.getValueFromRatio(chargeRatio);
+            velocityOverLifetimeModule.orbitalY = orbitY.GetValueFromRatio(chargeRatio);
             diskOrbitParticle.transform.localScale = radius.GetValueFromRatio(chargeRatio);
 
             // SFX

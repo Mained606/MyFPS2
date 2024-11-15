@@ -30,10 +30,10 @@ namespace Unity.FPS.Gameplay
         {
             //충전량에 따라 발사체의 속성값 설정
             ProjectileStandard projectileStandard = GetComponent<ProjectileStandard>();
-            projectileStandard.damage = Damage.getValueFromRatio(projectileBase.InitialCharge);
-            projectileStandard.speed = Speed.getValueFromRatio(projectileBase.InitialCharge);
-            projectileStandard.gravityDown = GravityDown.getValueFromRatio(projectileBase.InitialCharge);
-            projectileStandard.radius = radius.getValueFromRatio(projectileBase.InitialCharge);
+            projectileStandard.damage = Damage.GetValueFromRatio(projectileBase.InitialCharge);
+            projectileStandard.speed = Speed.GetValueFromRatio(projectileBase.InitialCharge);
+            projectileStandard.gravityDown = GravityDown.GetValueFromRatio(projectileBase.InitialCharge);
+            projectileStandard.radius = radius.GetValueFromRatio(projectileBase.InitialCharge);
         }
     }
 }

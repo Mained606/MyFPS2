@@ -13,7 +13,7 @@ namespace Unity.FPS.Game
         public float Min;
         public float Max;
 
-        public float getValueFromRatio(float ratio)
+        public float GetValueFromRatio(float ratio)
         {
             return Mathf.Lerp(Min, Max, ratio);
         }

@@ -3325,6 +3325,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2729281213404769777}
+  - component: {fileID: 2729281213404769784}
   m_Layer: 5
   m_Name: GameManager
   m_TagString: Untagged
@@ -3332,6 +3333,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &2729281213404769784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2729281213404769783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de84c6e2215038041824913aeb3353c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2729281213596062134
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5713,6 +5726,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2791411794489483667}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &2791411794489483670 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7635230255058315795, guid: 7593818fba43c7f4c8372299ce5e893f,
+    type: 3}
+  m_PrefabInstance: {fileID: 2791411794489483667}
+  m_PrefabAsset: {fileID: 0}
 --- !u!119 &2940698295438908849
 Projector:
   m_ObjectHideFlags: 0
@@ -6230,6 +6249,7 @@ GameObject:
   - component: {fileID: 8118132282568604721}
   - component: {fileID: 8118132282568604722}
   - component: {fileID: 8118132282568604723}
+  - component: {fileID: 8118132282568604724}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -6385,6 +6405,11 @@ PrefabInstance:
         type: 3}
       propertyPath: ColorModule.gradient.maxGradient.m_NumColorKeys
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7951582856014658560, guid: 3f5b545b9a1e74c418b061bba5bb9e2c,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7012,6 +7037,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6521124556920433267}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &6521124556920433270 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7635230255058315795, guid: 7593818fba43c7f4c8372299ce5e893f,
+    type: 3}
+  m_PrefabInstance: {fileID: 6521124556920433267}
+  m_PrefabAsset: {fileID: 0}
 --- !u!222 &6570521494711088228
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7315,6 +7346,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7302320148523008241}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &7302320148523008244 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7635230255058315795, guid: 7593818fba43c7f4c8372299ce5e893f,
+    type: 3}
+  m_PrefabInstance: {fileID: 7302320148523008241}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7377150178866266149
 Transform:
   m_ObjectHideFlags: 0
@@ -7352,6 +7389,7 @@ GameObject:
   - component: {fileID: 7782099205270386945}
   - component: {fileID: 7782099205270386947}
   - component: {fileID: 7782099205270386948}
+  - component: {fileID: 7782099205270386949}
   m_Layer: 0
   m_Name: Enemy_HoverBot
   m_TagString: Untagged
@@ -7529,6 +7567,12 @@ PrefabInstance:
 --- !u!4 &7694515327405536158 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8492437560918690266, guid: 7593818fba43c7f4c8372299ce5e893f,
+    type: 3}
+  m_PrefabInstance: {fileID: 7694515327405536157}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &7694515327405536160 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7635230255058315795, guid: 7593818fba43c7f4c8372299ce5e893f,
     type: 3}
   m_PrefabInstance: {fileID: 7694515327405536157}
   m_PrefabAsset: {fileID: 0}
@@ -7779,8 +7823,27 @@ MonoBehaviour:
   animator: {fileID: 645871940}
   movementSound: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
   pitchMovementSpeed:
-    Min: 0
-    Max: 0
+    Min: 0.1
+    Max: 2
+  randomHitSparks:
+  - {fileID: 2791411794489483670}
+  - {fileID: 6521124556920433270}
+  - {fileID: 7694515327405536160}
+  - {fileID: 7302320148523008244}
+--- !u!114 &7782099205270386949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7377150178866266153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33281ebe340d865418b06c9a42761726, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  affiliation: 0
+  aimPoint: {fileID: 0}
 --- !u!1 &7826856399085042741
 GameObject:
   m_ObjectHideFlags: 0
@@ -7959,6 +8022,20 @@ MonoBehaviour:
   aimingBobAmount: 0.02
   recoilSharpness: 50
   distanceOnScoped: 0.05
+--- !u!114 &8118132282568604724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4704865185068623876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33281ebe340d865418b06c9a42761726, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  affiliation: 1
+  aimPoint: {fileID: 0}
 --- !u!114 &8187822875274363416
 MonoBehaviour:
   m_ObjectHideFlags: 0
