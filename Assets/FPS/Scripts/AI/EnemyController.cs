@@ -1,29 +1,29 @@
-using UnityEngine;
-using Unity.FPS.Game;
-using UnityEngine.Events;
 using System.Collections.Generic;
+using Unity.FPS.Game;
+using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.AI;
 
 namespace Unity.FPS.AI
 {
     /// <summary>
-    /// ë Œë”ëŸ¬ ë°ì´í„°: ë¨¸í…Œë¦¬ì–¼ ì •ë³´ ì €ì¥
+    /// ·»´õ·¯ µ¥ÀÌÅÍ: ¸ŞÅÍ¸®¾ó Á¤º¸ ÀúÀå
     /// </summary>
     [System.Serializable]
     public struct RendererIndexData
     {
-        public int materialIndex;
         public Renderer renderer;
+        public int metarialIndx;
 
-        public RendererIndexData(int materialIndex, Renderer renderer)
+        public RendererIndexData(Renderer _renderer, int index)
         {
-            this.materialIndex = materialIndex;
-            this.renderer = renderer;
+            renderer = _renderer;
+            metarialIndx = index;
         }
     }
 
     /// <summary>
-    /// Enemyë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
+    /// Enemy ¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class EnemyController : MonoBehaviour
     {
@@ -32,86 +32,148 @@ namespace Unity.FPS.AI
 
         //death
         public GameObject deathVfxPrefab;
-        public Transform deathVfxSpawnPosition;
+        public Transform deathVfxSpawnPostion;
 
-        //damage
+        //damamge
         public UnityAction Damaged;
 
         //Sfx
         public AudioClip damageSfx;
 
         //Vfx
-        public Material bodyMaterial;           // ë°ë¯¸ì§€ë¥¼ ì¤„ ë¨¸í…Œë¦¬ì–¼
+        public Material bodyMaterial;           //µ¥¹ÌÁö¸¦ ÁÙ ¸ŞÅÍ¸®¾ó
         [GradientUsage(true)]
-        public Gradient OnHitBodyGradient;      // ë°ë¯¸ì§€ë¥¼ ì»¬ëŸ¬ ê·¸ë¼ë””ì–¸íŠ¸ íš¨ê³¼ë¡œ í‘œí˜„
-
-        //body ë¨¸í…Œë¦¬ì–¼ì„ ê°€ì§€ê³  ìˆëŠ” ë Œë”ëŸ¬ ë¦¬ìŠ¤íŠ¸
+        public Gradient OnHitBodyGradient;      //µ¥¹ÌÁö¸¦ ÄÃ·¯ ±×¶óµğ¾ğÆ® È¿°ú·Î Ç¥Çö
+        //body MaterialÀ» °¡Áö°í ÀÖ´Â ·»´õ·¯ µ¥ÀÌÅÍ ¸®½ºÆ®
         private List<RendererIndexData> bodyRenderer = new List<RendererIndexData>();
-        private MaterialPropertyBlock bodyMaterialPropertyBlock;
+        MaterialPropertyBlock bodyFlashMaterialPropertyBlock;
 
         [SerializeField] private float flashOnHitDuration = 0.5f;
-        float lastTimeDamaged = Mathf.NegativeInfinity;
+        float lastTimeDamaged = float.NegativeInfinity;
         bool wasDamagedThisFrame = false;
 
-        //íŒ¨íŠ¸ë¡¤ ê²½ë¡œ
-        public NavMeshAgent Agent {get; private set;}
-        public PatrolPath PatrolPath {get; set;}
-        private int pathDestinationIndex;       // ëª©í‘œ ì›¨ì´í¬ì¸íŠ¸ ì¸ë±ìŠ¤
-        private float pathReachingRadius = 1f;  // ë„ì°© íŒì •
+        //Patrol
+        public NavMeshAgent Agent { get; private set; }
+        public PatrolPath PatrolPath { get; set; }
+        private int pathDestinationIndex;               //¸ñÇ¥ ¿şÀÌÆ÷ÀÎÆ® ÀÎµ¦½º
+        private float pathReachingRadius = 1f;          //µµÂøÆÇÁ¤
+
+        //Detection
+        private Actor actor;
+        private Collider[] selfColliders;
+        public DetectionModule DetectionModule { get; private set; }
+
+        public GameObject KnonwDetectedTarget => DetectionModule.KnownDetectedTarget;
+        public bool IsSeeingTarget => DetectionModule.IsSeeingTarget;
+        public bool HadKnownTarget => DetectionModule.HadKnownTarget;
+
+        public Material eyeColorMaterial;
+        [ColorUsage(true, true)] public Color defaultEyeColor;
+        [ColorUsage(true, true)] public Color attackEyeColor;
+
+        //eye MaterialÀ» °¡Áö°í ÀÖ´Â ·»´õ·¯ µ¥ÀÌÅÍ
+        private RendererIndexData eyeRendererData;
+        private MaterialPropertyBlock eyeColorMaterialPorpertyBlock;
+
+        public UnityAction OnDetectedTarget;
+        public UnityAction OnLostTarget;
+
+        //
+        private float orientSpeed = 10f;
+        public bool IsTargetInAttackRange => DetectionModule.IsTargetInAttackRange;
+
+        public bool swapToNextWeapon = false;
+        public float delayAfterWeaponSwap = 0f;
+        private float lastTimeWeaponSwapped = Mathf.NegativeInfinity;
+
+        public int currentWeaponIndex;
+        private WeaponController currentWeapon;
+        private WeaponController[] weapons;
         #endregion
 
         private void Start()
         {
-            //ì°¸ì¡°
+            //ÂüÁ¶
             Agent = GetComponent<NavMeshAgent>();
+            actor = GetComponent<Actor>();
+            selfColliders = GetComponentsInChildren<Collider>();
+
+            var detectionModules = GetComponentsInChildren<DetectionModule>();
+            DetectionModule = detectionModules[0];
+            DetectionModule.OnDetectedTarget += OnDetected;
+            DetectionModule.OnLostTarget += OnLost;
+
             health = GetComponent<Health>();
-            
             health.OnDamaged += OnDamaged;
             health.OnDie += OnDie;
 
-            //body ë¨¸í…Œë¦¬ì–¼ì„ ê°€ì§€ê³  ìˆëŠ” ë Œë”ëŸ¬ ì •ë³´ ë¦¬ìŠ¤íŠ¸ ë§Œë“¤ê¸°
+            //¹«±â ÃÊ±âÈ­
+            FindAndInitializeAllWeapons();
+            var weapon = GetCurrentWeapon();
+            weapon.ShowWeapon(true);
+
+            //body MaterialÀ» °¡Áö°í ÀÖ´Â ·»´õ·¯ Á¤º¸ ¸®½ºÆ® ¸¸µé±â
             Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
-            foreach(var renderer in renderers)
+            foreach (var renderer in renderers)
             {
-                for(int i = 0; i < renderer.sharedMaterials.Length; i++)
+                for (int i = 0; i < renderer.sharedMaterials.Length; i++)
                 {
-                    if(renderer.sharedMaterials[i] == bodyMaterial)
+                    //body
+                    if (renderer.sharedMaterials[i] == bodyMaterial)
                     {
-                        bodyRenderer.Add(new RendererIndexData(i, renderer));
+                        bodyRenderer.Add(new RendererIndexData(renderer, i));
+                    }
+
+                    //eye
+                    if (renderer.sharedMaterials[i] == eyeColorMaterial)
+                    {
+                        eyeRendererData = new RendererIndexData(renderer, i);
                     }
                 }
             }
 
-            bodyMaterialPropertyBlock = new MaterialPropertyBlock();
+            //body
+            bodyFlashMaterialPropertyBlock = new MaterialPropertyBlock();
+
+            //eye
+            if(eyeRendererData.renderer)
+            {
+                eyeColorMaterialPorpertyBlock = new MaterialPropertyBlock();
+                eyeColorMaterialPorpertyBlock.SetColor("_EmissionColor", defaultEyeColor);
+                eyeRendererData.renderer.SetPropertyBlock(eyeColorMaterialPorpertyBlock,
+                    eyeRendererData.metarialIndx);
+            }
         }
 
-        void Update()
+        private void Update()
         {
-            //ë°ë¯¸ì§€ íš¨ê³¼
-            Color currentColor = OnHitBodyGradient.Evaluate((Time.time - lastTimeDamaged) / flashOnHitDuration);
-            bodyMaterialPropertyBlock.SetColor("_EmissionColor", currentColor);
-            foreach(var data in bodyRenderer)
+            //µğÅØ¼Ç
+            DetectionModule.HandleTargetDetection(actor, selfColliders);
+
+            //µ¥¹ÌÁö È¿°ú
+            Color currentColor = OnHitBodyGradient.Evaluate((Time.time - lastTimeDamaged)/flashOnHitDuration);
+            bodyFlashMaterialPropertyBlock.SetColor("_EmissionColor", currentColor);
+            foreach (var data in bodyRenderer)
             {
-                data.renderer.SetPropertyBlock(bodyMaterialPropertyBlock, data.materialIndex);
+                data.renderer.SetPropertyBlock(bodyFlashMaterialPropertyBlock, data.metarialIndx);
             }
 
-            //í”„ë ˆì„ ì´ˆê¸°í™”
+            //
             wasDamagedThisFrame = false;
         }
 
         private void OnDamaged(float damage, GameObject damageSource)
         {
-            //ë°ë¯¸ì§€ ì²˜ë¦¬
             if(damageSource && damageSource.GetComponent<EnemyController>() == null)
             {
-                //ë“±ë¡ëœ í•¨ìˆ˜ í˜¸ì¶œ
+                //µî·ÏµÈ ÇÔ¼ö È£Ãâ
                 Damaged?.Invoke();
 
-                // ë°ë¯¸ì§€ë¥¼ ì¤€ ì‹œê°„ ì €ì¥
+                //µ¥¹ÌÁö¸¦ ÁØ ½Ã°£
                 lastTimeDamaged = Time.time;
 
                 //Sfx
-                if(damageSfx && wasDamagedThisFrame == false)
+                if (damageSfx && wasDamagedThisFrame == false)
                 {
                     AudioUtility.CreateSfx(damageSfx, this.transform.position, 0f);
                 }
@@ -121,53 +183,54 @@ namespace Unity.FPS.AI
 
         private void OnDie()
         {
-            // í­ë°œ íš¨ê³¼
-            GameObject effectGo = Instantiate(deathVfxPrefab, deathVfxSpawnPosition.position, Quaternion.identity);
+            //Æø¹ß È¿°ú
+            GameObject effectGo = Instantiate(deathVfxPrefab, deathVfxSpawnPostion.position, Quaternion.identity);
             Destroy(effectGo, 5f);
 
+            //Enemy Å³
             Destroy(gameObject);
         }
 
-        // íŒ¨íŠ¸ë¡¤ì´ ìœ íš¨í•œì§€?
+        //ÆĞÆ®·ÑÀÌ À¯È¿ÇÑÁö? ÆĞÆ®·ÑÀÌ °¡´ÉÇÑÁö?
         private bool IsPathVaild()
         {
             return PatrolPath && PatrolPath.wayPoints.Count > 0;
         }
 
+        //°¡Àå °¡±î¿î WayPoint Ã£±â
         private void SetPathDestinationToClosestWayPoint()
         {
-            if(IsPathVaild() == false)
+            if (IsPathVaild() == false)
             {
                 pathDestinationIndex = 0;
                 return;
-            }
+            }                
 
             int closestWayPointIndex = 0;
-
-            for(int i = 0; i < PatrolPath.wayPoints.Count; i++)
+            for (int i = 0; i < PatrolPath.wayPoints.Count; i++)
             {
-                float distance = PatrolPath.GetDistanceToWaypoint(transform.position, i);
-                float closestDistance = PatrolPath.GetDistanceToWaypoint(transform.position, closestWayPointIndex);
-
+                float distance = PatrolPath.GetDistanceToWayPoint(transform.position, i);
+                float closestDistance = PatrolPath.GetDistanceToWayPoint(transform.position, closestWayPointIndex);
                 if(distance < closestDistance)
                 {
-                        closestWayPointIndex = i;
+                    closestWayPointIndex = i;
                 }
             }
             pathDestinationIndex = closestWayPointIndex;
         }
 
-        //ëª©í‘œ ì§€ì ì˜ ìœ„ì¹˜ ê°’ ì–»ì–´ì˜¤ê¸°
+        //¸ñÇ¥ ÁöÁ¡ÀÇ À§Ä¡ °ª ¾ò¾î¿À±â
         public Vector3 GetDestinationOnPath()
         {
-            if(IsPathVaild() == false)
-            {
+            if (IsPathVaild() == false)
+            {   
                 return this.transform.position;
             }
-            return PatrolPath.GetPositionOfWaypoint(pathDestinationIndex);
+
+            return PatrolPath.GetPositionOfWayPoint(pathDestinationIndex);
         }
 
-        //ëª©í‘œ ì§€ì  ì„¤ì • - Nav ì‹œìŠ¤í…œ ì´ìš©
+        //¸ñÇ¥ ÁöÁ¡ ¼³Á¤ - Nav ½Ã½ºÅÛ ÀÌ¿ë
         public void SetNavDestination(Vector3 destination)
         {
             if(Agent)
@@ -176,17 +239,17 @@ namespace Unity.FPS.AI
             }
         }
 
-        //ë„ì°© íŒì • í›„ ë‹¤ìŒ ëª©í‘œ
+        //µµÂø ÆÇÁ¤ ÈÄ ´ÙÀ½ ¸ñÇ¥ÁöÁ¡ ¼³Á¤
         public void UpdatePathDestination(bool inverseOrder = false)
         {
-            if(IsPathVaild() == false)
+            if (IsPathVaild() == false)
                 return;
 
-            //ë„ì°©íŒì •
+            //µµÂøÆÇÁ¤
             float distance = (transform.position - GetDestinationOnPath()).magnitude;
             if(distance <= pathReachingRadius)
-            {
-                pathDestinationIndex = inverseOrder ? (pathDestinationIndex -1) : (pathDestinationIndex +1);
+            {        
+                pathDestinationIndex = inverseOrder ? (pathDestinationIndex - 1) : (pathDestinationIndex + 1);
                 if(pathDestinationIndex < 0)
                 {
                     pathDestinationIndex += PatrolPath.wayPoints.Count;
@@ -197,5 +260,106 @@ namespace Unity.FPS.AI
                 }
             }
         }
+
+        //
+        public void OrientToward(Vector3 lookPosition)
+        {
+            Vector3 lookDirect = Vector3.ProjectOnPlane(lookPosition - transform.position, Vector3.up).normalized;
+            if(lookDirect.sqrMagnitude != 0)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(lookDirect);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, orientSpeed * Time.deltaTime);
+            }
+        }
+
+        //Àû °¨Áö½Ã È£ÃâµÇ´Â ÇÔ¼ö
+        private void OnDetected()
+        {
+            OnDetectedTarget?.Invoke();
+
+            if(eyeRendererData.renderer)
+            {
+                Debug.Log("================== OnDetected");
+                eyeColorMaterialPorpertyBlock.SetColor("_EmissionColor", attackEyeColor);
+                eyeRendererData.renderer.SetPropertyBlock(eyeColorMaterialPorpertyBlock,
+                    eyeRendererData.metarialIndx);
+            }
+        }
+
+
+        //Àû ÀÒ¾î¹ö·ÈÀ»¶§ È£ÃâµÇ´Â ÇÔ¼ö
+        private void OnLost()
+        {
+            OnLostTarget?.Invoke();
+
+            Debug.Log("================== OnLost");
+
+            if (eyeRendererData.renderer)
+            {
+                eyeColorMaterialPorpertyBlock.SetColor("_EmissionColor", defaultEyeColor);
+                eyeRendererData.renderer.SetPropertyBlock(eyeColorMaterialPorpertyBlock,
+                    eyeRendererData.metarialIndx);
+            }
+        }
+
+        //°¡Áö°í ÀÖ´Â ¹«±â Ã£°í ÃÊ±âÈ­
+        private void FindAndInitializeAllWeapons()
+        {
+            if(weapons == null)
+            {
+                weapons = this.GetComponentsInChildren<WeaponController>();
+
+                for (int i = 0; i < weapons.Length; i++)
+                {
+                    weapons[i].Owner = this.gameObject;
+                }
+            }
+        }
+
+        //ÁöÁ¤ÇÑ ÀÎµ¦½º¿¡ ÇØ´çÇÏ´Â ¹«±â¸¦ current·Î ÁöÁ¤
+        private void SetCurrentWeapon(int index)
+        {
+            currentWeaponIndex = index;
+            currentWeapon = weapons[currentWeaponIndex];
+            if (swapToNextWeapon)
+            {
+                lastTimeWeaponSwapped = Time.time;
+            }
+            else
+            {
+                lastTimeWeaponSwapped = Mathf.NegativeInfinity;
+            }
+        }
+
+        //ÇöÀç current weapon Ã£±â
+        public WeaponController GetCurrentWeapon()
+        {
+            FindAndInitializeAllWeapons();
+            if (currentWeapon == null)
+            {
+                SetCurrentWeapon(0);
+            }
+
+            return currentWeapon;
+        }
+
+        //Àû¿¡°Ô ÃÑ±¸¸¦ µ¹¸°´Ù
+        public void OrientWeaponsToward(Vector3 lookPosition)
+        {
+            for (int i = 0; i < weapons.Length; i++)
+            {
+                Vector3 weaponForward = (lookPosition - weapons[i].transform.position).normalized;
+                weapons[i].transform.forward = weaponForward;
+            }
+        }
+
+        //°ø°İ
+        public void TryAttack(Vector3 targetPosition)
+        {
+
+        }
+
     }
 }
+
+

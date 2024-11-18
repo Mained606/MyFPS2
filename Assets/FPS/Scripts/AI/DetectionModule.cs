@@ -1,45 +1,124 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using Unity.FPS.Game;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering;
 
 namespace Unity.FPS.AI
 {
     /// <summary>
-    /// ì  ë””í…íŒ… êµ¬í˜„
+    /// Àû µğÅØÆÃ ±¸Çö
     /// </summary>
     public class DetectionModule : MonoBehaviour
     {
         #region Variables
         private ActorManager actorManager;
 
-        public UnityAction OnDetectedTarget;        // ì ì„ ê°ì§€í•˜ë©´ ë“±ë¡ëœ í•¨ìˆ˜ í˜¸ì¶œ
-        public UnityAction OnLostTarget;            // ì ì„ ë†“ì¹˜ë©´ ë“±ë¡ëœ í•¨ìˆ˜ í˜¸ì¶œ
+        public UnityAction OnDetectedTarget;     //ÀûÀ» °¨ÁöÇÏ¸é µî·ÏµÈ ÇÔ¼ö È£Ãâ
+        public UnityAction OnLostTarget;         //ÀûÀ» ³õÄ¡¸é µî·ÏµÊ ÇÔ¼ö È£Ãâ
 
+        public GameObject KnownDetectedTarget { get; private set; }
+        public bool HadKnownTarget { get; private set; }
+        public bool IsSeeingTarget { get; private set; }
+
+        public Transform detectionSourcePoint;
+        public float detectionRange = 20f;                          //Àû °¨Áö °Å¸®
+
+        public float knownTargetTimeout = 4f;
+        private float TimeLastSeenTarget = Mathf.NegativeInfinity;
+
+        //attack
+        public float attackRange = 10f;                             //Àû °ø°İ °Å¸®
+        public bool IsTargetInAttackRange { get; private set; }
         #endregion
 
-        void Start()
+        private void Start()
         {
-            // ì°¸ì¡°
+            //ÂüÁ¶
             actorManager = GameObject.FindObjectOfType<ActorManager>();
-
         }
 
-        // ë””í…íŒ…
+        //µğÅØÆÃ
         public void HandleTargetDetection(Actor actor, Collider[] selfCollider)
         {
+            if(KnownDetectedTarget && !IsSeeingTarget && (Time.time - TimeLastSeenTarget) > knownTargetTimeout)
+            {
+                KnownDetectedTarget = null;
+            }
 
+            float sqrDetectionRange = detectionRange * detectionRange;
+            IsSeeingTarget = false;
+            float closetSqrdistance = Mathf.Infinity;
+
+            foreach (var otherActor in actorManager.Actors)
+            {
+                //¾Æ±ºÀÌ¸é
+                if (otherActor.affiliation == actor.affiliation)
+                    continue;
+
+                float sqrDistance = (otherActor.aimPoint.position - detectionSourcePoint.position).sqrMagnitude;
+                if(sqrDistance < sqrDetectionRange && sqrDistance < closetSqrdistance)
+                {
+                    RaycastHit[] hits = Physics.RaycastAll(detectionSourcePoint.position,
+                        (otherActor.aimPoint.position - detectionSourcePoint.position).normalized, detectionRange,
+                        -1, QueryTriggerInteraction.Ignore);
+
+                    RaycastHit cloestHit = new RaycastHit();
+                    cloestHit.distance = Mathf.Infinity;
+                    bool foundValidHit = false;
+                    foreach (var hit in hits)
+                    {
+                        if(hit.distance < cloestHit.distance && selfCollider.Contains(hit.collider) == false)
+                        {
+                            cloestHit = hit;
+                            foundValidHit = true;
+                        }
+                    }
+
+                    //ÀûÀ» Ã£¾ÒÀ¸¸é
+                    if(foundValidHit)
+                    {
+                        Actor hitActor = cloestHit.collider.GetComponentInParent<Actor>();
+                        if(hitActor == otherActor)
+                        {
+                            IsSeeingTarget = true;
+                            closetSqrdistance = sqrDistance;
+
+                            TimeLastSeenTarget = Time.time;
+                            KnownDetectedTarget = otherActor.aimPoint.gameObject;
+                        }
+                    }
+                }
+            }
+
+            //attack Range check
+            IsTargetInAttackRange = (KnownDetectedTarget != null) &&
+                Vector3.Distance(transform.position, KnownDetectedTarget.transform.position) <= attackRange;
+
+            //ÀûÀ» ¸ğ¸£°í ÀÖ´Ù°¡ ÀûÀ» ¹ß°ßÇÑ ¼ø°£¿¡ ½ÇÇà
+            if (HadKnownTarget == false && KnownDetectedTarget != null)
+            {
+                OnDetected();
+            }
+
+            //ÀûÀ» °è¼Ó ÁÖ½ÃÇÏ°í ÀÖ´Ù°¡ ³õÄ¡´Â ¼ø°£ ½ÇÇà
+            if(HadKnownTarget == true &&  KnownDetectedTarget == null)
+            {
+                OnLost();
+            }
+
+            //µğÅØÆÃ »óÅÂ ÀúÀå
+            HadKnownTarget = (KnownDetectedTarget != null);
         }
 
-        // ì ì„ ê°ì§€í•˜ë©´
-        void OnDetected()
+        //ÀûÀ» °¨ÁöÇÏ¸é ½ÇÇà
+        public void OnDetected()
         {
             OnDetectedTarget?.Invoke();
         }
 
-        // ì ì„ ë†“ì¹˜ë©´
-        void OnLost()
+        //ÀûÀ» ³õÄ¡¸é
+        public void OnLost()
         {
             OnLostTarget?.Invoke();
         }

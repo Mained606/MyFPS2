@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 106790115311484948}
   - component: {fileID: 106790115311484949}
   - component: {fileID: 106790115311484954}
-  - component: {fileID: 3775632570833938171}
-  - component: {fileID: 5425632821808650279}
-  - component: {fileID: 378335856022487399}
-  - component: {fileID: 7912941036180368453}
+  - component: {fileID: 3274817856681570123}
+  - component: {fileID: 4365667792891970693}
+  - component: {fileID: 6083676768477013058}
+  - component: {fileID: 6249137661770119905}
   m_Layer: 0
   m_Name: Projectile_Disc
   m_TagString: Untagged
@@ -88,7 +88,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3775632570833938171
+--- !u!114 &3274817856681570123
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 106790115311484953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0627d0dc2ba90fd468c4f0435a17e3e4, type: 3}
+  m_Script: {fileID: 11500000, guid: ce3940a4faba2ae4999e546000ca1c96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 30
@@ -108,12 +108,12 @@ MonoBehaviour:
   hittableLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  impactVfxPrefab: {fileID: 4260779743739990948, guid: bbe6bdea7cd168e428a309e9eb2e728b,
+  impackVfxPrefab: {fileID: 4260779743739990948, guid: bbe6bdea7cd168e428a309e9eb2e728b,
     type: 3}
   impactVfxLifeTime: 5
-  impactSfxClip: {fileID: 8300000, guid: f836197009469ab4380180af8babaec5, type: 3}
+  impactSfxClip: {fileID: 8300000, guid: 7d30b1415365653459bc76871e0b0545, type: 3}
   damage: 20
---- !u!114 &5425632821808650279
+--- !u!114 &4365667792891970693
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 106790115311484953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ff43a779e09402489576cb444a66c8e, type: 3}
+  m_Script: {fileID: 11500000, guid: fe40f61e570a11d47a27d64ab5460a76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Damage:
@@ -134,10 +134,10 @@ MonoBehaviour:
   GravityDown:
     Min: 10
     Max: 3
-  radius:
+  Radius:
     Min: 0.2
     Max: 0.2
---- !u!114 &378335856022487399
+--- !u!114 &6083676768477013058
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,14 +146,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 106790115311484953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59fe23ed0acef9e46ae6a9286deb8517, type: 3}
+  m_Script: {fileID: 11500000, guid: 8e62c89a0bf12364fbca8d4770efb3cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chargeObject: {fileID: 106790115311484953}
+  charageObejct: {fileID: 106790115311484953}
   scale:
     Min: {x: 0.5, y: 0.5, z: 0.5}
     Max: {x: 0.8, y: 0.8, z: 0.8}
---- !u!114 &7912941036180368453
+--- !u!114 &6249137661770119905
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,7 +162,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 106790115311484953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92bcad62f32feb145a79788c49ac30a6, type: 3}
+  m_Script: {fileID: 11500000, guid: df6b9d752e19fea4e85b38be0d1118fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   areaOfEffectDistance: 5
@@ -172,26 +172,26 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.33508024
-      outSlope: -0.33508024
+      inSlope: -0.43972394
+      outSlope: -0.43972394
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.74922794
-      value: 0.7489485
-      inSlope: -0.84022033
-      outSlope: -0.84022033
-      tangentMode: 34
+      time: 0.50607866
+      value: 0.7774651
+      inSlope: -0.901681
+      outSlope: -0.901681
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.4542079
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1.0166626
-      value: 0.38915253
-      inSlope: -1.3453604
-      outSlope: -1.3453604
+      time: 1
+      value: 0
+      inSlope: -1.5740666
+      outSlope: -1.5740666
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334

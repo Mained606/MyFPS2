@@ -3,15 +3,14 @@ using UnityEngine;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// ê²Œì„ì— ë“±ì¥í•˜ëŠ” ë°°ìš°
+    /// °ÔÀÓ¿¡ µîÀåÇÏ´Â Actor¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class Actor : MonoBehaviour
     {
         #region Variables
-        //ì†Œì†
+        //¼Ò¼Ó - ¾Æ±º, Àû±º ±¸ºĞ
         public int affiliation;
-
-        // ì¡°ì¤€ì 
+        //Á¶ÁØÁ¡
         public Transform aimPoint;
 
         private ActorManager actorManager;
@@ -19,9 +18,10 @@ namespace Unity.FPS.Game
 
         private void Start()
         {
-            // Actor ë¦¬ìŠ¤íŠ¸ì— ë“±ë¡
+            //Actor ¸®½ºÆ®¿¡ Ãß°¡(µî·Ï)
             actorManager = GameObject.FindObjectOfType<ActorManager>();
-            if(actorManager.Actors.Contains(this) == false)
+            //Actor ¸®½ºÆ®¿¡ Æ÷ÇÔµÇ¾î ÀÖ´ÂÁö Ã¼Å©
+            if (actorManager.Actors.Contains(this)== false)
             {
                 actorManager.Actors.Add(this);
             }
@@ -29,8 +29,8 @@ namespace Unity.FPS.Game
 
         private void OnDestroy()
         {
-            // Actor ë¦¬ìŠ¤íŠ¸ì—ì„œ ì‚­ì œ
-            if(actorManager)
+            //Actor ¸®½ºÆ®¿¡¼­ »èÁ¦
+            if (actorManager)
             {
                 actorManager.Actors.Remove(this);
             }

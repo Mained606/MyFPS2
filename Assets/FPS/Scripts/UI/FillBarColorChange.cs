@@ -4,40 +4,39 @@ using UnityEngine.UI;
 namespace Unity.FPS.UI
 {
     /// <summary>
-    /// ê²Œì´ì§€ë°” ìƒ‰ ë³€ê²½
+    /// °ÔÀÌÁö¹ÙÀÇ °ÔÀÌÁö»ö, ¹é±×¶ó¿îµå»ö º¯°æ ±¸Çö
     /// </summary>
     public class FillBarColorChange : MonoBehaviour
     {
         #region Variables
         public Image foregroundImage;
-        public Color defaultForegroundColor;        // ê²Œì´ì§€ì˜ ê¸°ë³¸ ì»¬ëŸ¬
-        public Color flashForeGroundColorFull;      // ê²Œì´ì§€ë°”ê°€ í’€ë¡œ ì°¨ëŠ” ìˆœê°„ í”Œë˜ì‹œ íš¨ê³¼
+        public Color defaultForegroundColor;        //°ÔÀÌÁöÀÇ ±âº» ÄÃ·¯
+        public Color flashForeGroundColorFull;      //°ÔÀÌÁö°¡ Ç®·Î Â÷´Â ¼ø°£ »ö ÇÃ·¡½Ã È¿°ú
 
         public Image backgroundImage;
-        public Color defaultBackgroundColor;        // ë°±ê·¸ë¼ìš´ë“œ ê¸°ë³¸ ì»¬ëŸ¬
-        public Color flashBackgroundColorEmpty;     // ë°±ê·¸ë¼ìš´ë“œ ê²Œì´ì§€ë°”ê°€ ë¹„ì–´ìˆëŠ” ìˆœê°„ í”Œë˜ì‹œ íš¨ê³¼
+        public Color defaultBackgroundColor;        //¹é±×¶ó¿îµå ±âº» ÄÃ·¯
+        public Color flashBackgroundColorEmpty;     //¹é±×¶ó¿îµå °ÔÀÌÁö°ªÀÌ 0ÀÏ¶§ ÄÃ·¯°ª
 
-        private float fullValue = 1f;                // ê²Œì´ì§€ë°”ê°€ í’€ë¡œ ì°¨ëŠ” ìˆœê°„ ê°’
-        private float emptyValue = 0f;                // ê²Œì´ì§€ë°”ê°€ ë¹„ì–´ìˆëŠ” ìˆœê°„ ê°’
+        private float fullValue = 1f;               //°ÔÀÌÁö°¡ Ç®ÀÏ¶§ÀÇ °ª
+        private float emptyValue = 0f;              //°ÔÀÌÀÚ°¡ ºô¶§ÀÇ °ª
 
-        private float colorChangeSharpness = 5f;     // ìƒ‰ ë³€ê²½ ì†ë„
-        private float previousValue;                  // ì´ì „ ê°’    
-        
+        private float colorChangeSharpness = 5f;    //ÄÃ·¯ º¯°æ ¼Óµµ
+        private float prevousValue;                 //°ÔÀÌÁö°¡ Ç®·Î Â÷´Â ¼ø°£À» Ã£´Â º¯¼ö
         #endregion
 
-        // ìƒ‰ ë³€ê²½ ê´€ë ¨ ê°’ ì´ˆê¸°í™”
-        public void Initialize(float fullValueRatio, float emptyValueRatio)
+        //»ö º¯°æ °ü·Ã °ª ÃÊ±âÈ­
+        public void Initialize(float fullVauleRatio, float emptyValueRatio)
         {
-            fullValue = fullValueRatio;
+            fullValue = fullVauleRatio;
             emptyValue = emptyValueRatio;
 
-            previousValue = fullValue;
+            prevousValue = fullValue;
         }
-        
+
         public void UpdateVisual(float currentRatio)
         {
-            // ê²Œì´ì§€ê°€ í’€ë¡œ ì°¨ëŠ” ìˆœê°„
-            if(currentRatio == fullValue && currentRatio != previousValue)
+            //°ÔÀÌÁö°¡ Ç®·Î Â÷´Â ¼ø°£
+            if(currentRatio == fullValue && currentRatio != prevousValue)
             {
                 foregroundImage.color = flashForeGroundColorFull;
             }
@@ -53,7 +52,7 @@ namespace Unity.FPS.UI
                     colorChangeSharpness * Time.deltaTime);
             }
 
-            previousValue = currentRatio;
+            prevousValue = currentRatio;
         }
     }
 }

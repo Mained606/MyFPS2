@@ -3,31 +3,27 @@ using UnityEngine;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// TimeSelfDestruct ë¶€ì°©í•œ ê²Œì„ ì˜¤ë¸Œì íŠ¸ëŠ” ì§€ì •ëœ ì‹œê°„ì— íŒŒê´´
+    /// TimeSelfDestruct ºÎÂøÇÑ °ÔÀÓ ¿ÀºêÁ§Æ®´Â »ı¼º ÈÄ ÁöÁ¤µÈ ½Ã°£¿¡ Å³ 
     /// </summary>
-    public class TimeSelfDesturct : MonoBehaviour
+    public class TimeSelfDestruct : MonoBehaviour
     {
         #region Variables
         public float lifeTime = 1f;
-        private float spawnTime; // ìƒì„±ë  ë•Œì˜ ì‹œê°„
+        private float spawnTime;        //»ı¼ºµÉ¶§ÀÇ ½Ã°£
         #endregion
 
         private void Awake()
         {
+            //»ı¼º ½Ã°£À» ÀúÀå
             spawnTime = Time.time;
         }
-    
+
         private void Update()
         {
-            if(spawnTime + lifeTime <= Time.time)
+            if((spawnTime + lifeTime) <= Time.time )
             {
                 Destroy(gameObject);
             }
         }
-
-        // private void OnEnable()
-        // {
-        //     Destroy(this.gameObject, 5f);
-        // }
     }
 }

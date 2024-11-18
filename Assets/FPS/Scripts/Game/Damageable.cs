@@ -3,20 +3,21 @@ using UnityEngine;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// ì¶©ëŒì²´(Hit Box)ì— ë¶€ì°©ë˜ì–´ ë°ë¯¸ì§€ë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
+    /// µ¥¹ÌÁö¸¦ ÀÔ´Â Ãæµ¹Ã¼(hot box)¿¡ ºÎÂøµÇ¾î µ¥¹ÌÁö¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class Damageable : MonoBehaviour
     {
         #region Variables
         private Health health;
 
-        // ë°ë¯¸ì§€ ê³„ìˆ˜
+        //µ¥¹ÌÁö °è¼ö
         [SerializeField] private float damageMultiplier = 1f;
-        // ìì‹ ì´ ì…íŒ ë°ë¯¸ì§€ ê³„ìˆ˜
+
+        //ÀÚ½ÅÀÌ ÀÔÈù µ¥¹ÌÁö °è¼ö
         [SerializeField] private float sensibilityToSelfDamage = 0.5f;
         #endregion
 
-        void Awake()
+        private void Awake()
         {
             health = GetComponent<Health>();
             if (health == null)
@@ -24,28 +25,28 @@ namespace Unity.FPS.Game
                 health = GetComponentInParent<Health>();
             }
         }
-        
-        // ë°ë¯¸ì§€ ê³µì‹
-        public void InflictDamege(float damage, bool isExplosionDamage, GameObject damageSource)
-        {
-            if(health == null) return;
 
-            // totalDamageê°€ ì‹¤ì œ ë°ë¯¸ì§€ ê°’
+        public void InflictDamage(float damage, bool isExplosionDamage, GameObject damageSource)
+        {
+            if (health == null)
+                return;
+
+            //totalDamage°¡ ½ÇÁ¦ µ¥¹ÌÁö°ª
             var totalDamage = damage;
 
-            // í­ë°œ ë°ë¯¸ì§€ ì²´í¬ - í­ë°œ ë°ë¯¸ì§€ì¼ ë•ŒëŠ” damageMultiplierì„ ê³„ì‚°í•˜ì§€ ì•ŠëŠ”ë‹¤.
-            if(!isExplosionDamage)
+            //Æø¹ß µ¥¹ÌÁö Ã¼Å© - Æø¹ß µ¥¹ÌÁöÀÏ¶§´Â damageMultiplier¸¦ °è»êÇÏÁö ¾Ê´Â´Ù
+            if(isExplosionDamage == false)
             {
                 totalDamage *= damageMultiplier;
             }
 
-            // ìì‹ ì´ ì…íŒ ë°ë¯¸ì§€ ì²´í¬
-            if(health.gameObject == damageSource)
+            //ÀÚ½ÅÀÌ ÀÔÈù µ¥¹ÌÁöÀÌ¸é
+            if (health.gameObject == damageSource)
             {
                 totalDamage *= sensibilityToSelfDamage;
             }
-            
-            //ë°ë¯¸ì§€ ì ìš©
+
+            //µ¥¹ÌÁö ÀÔÈ÷±â
             health.TakeDamage(totalDamage, damageSource);
         }
     }

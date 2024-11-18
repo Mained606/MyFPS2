@@ -22,6 +22,7 @@ namespace Unity.FPS.Gameplay
 
         private bool fireInputWasHeld = false;
         private bool aimInputWasHeld = false;
+
         void Start()
         {   
             Cursor.lockState = CursorLockMode.Locked;
@@ -30,8 +31,8 @@ namespace Unity.FPS.Gameplay
 
         void LateUpdate()
         {
-           fireInputWasHeld = GetFireInputHeld();
-           aimInputWasHeld = GetAimInputHeld();
+            fireInputWasHeld = GetFireInputHeld();
+            aimInputWasHeld = GetAimInputHeld();
         }
 
         public bool CanProcessInput()
@@ -137,9 +138,10 @@ namespace Unity.FPS.Gameplay
             return false;
         }
 
+        //¹«±â ±³Ã¼
         public int GetSwitchWeaponInput()
         {
-            if(CanProcessInput())
+            if (CanProcessInput())
             {
                 if(Input.GetAxis(GameConstants.k_AxisNameNextWeapon) > 0f)
                 {
@@ -149,36 +151,45 @@ namespace Unity.FPS.Gameplay
                 {
                     return -1;
                 }
-
-                if(Input.GetAxis(GameConstants.k_k_MouseAxisNameScrollWheel) < 0f)
-                {
-                    return 1;
-                }
-                else if (Input.GetAxis(GameConstants.k_k_MouseAxisNameScrollWheel) > 0f)
+                else if (Input.GetAxis(GameConstants.k_MouseAxisNameScrollWheel) > 0f)
                 {
                     return -1;
+                }
+                else if (Input.GetAxis(GameConstants.k_MouseAxisNameScrollWheel) < 0f)
+                {
+                    return 1;
                 }
             }
 
             return 0;
         }
 
-        // ì¡°ì¤€ - ë§ˆìš°ìŠ¤ ìš°í´ë¦­ ëˆ„ë¥´ê¸° ì‹œìž‘
+        //Á¶ÁØ ½ÃÀÛ
         public bool GetAimInputDown()
         {
-            if(CanProcessInput())
+            if (CanProcessInput())
             {
                 return GetAimInputHeld() == true && aimInputWasHeld == false;
-                // return Input.GetButtonDown(GameConstants.k_ButtonNameAim);
             }
 
             return false;
         }
 
-        // ì¡°ì¤€ - ë§ˆìš°ìŠ¤ ìš°í´ë¦­ í•˜ëŠ” ë™ì•ˆ
+        //Á¶ÁØ ³¡
+        public bool GetAimInputUp()
+        {
+            if (CanProcessInput())
+            {
+                return GetAimInputHeld() == false && aimInputWasHeld == true;
+            }
+
+            return false;
+        }
+
+        //Á¶ÁØ - ¸¶¿ì½º ¿ìÅ¬¸¯ÇÏ´Â µ¿¾È
         public bool GetAimInputHeld()
         {
-            if(CanProcessInput())
+            if (CanProcessInput())
             {
                 return Input.GetButton(GameConstants.k_ButtonNameAim);
             }
@@ -186,52 +197,38 @@ namespace Unity.FPS.Gameplay
             return false;
         }
 
-        // ì¡°ì¤€ - ë§ˆìš°ìŠ¤ ìš°í´ë¦­ ëˆ„ë¥´ê¸° ë
-        public bool GetAimInputUp()
-        {
-            if(CanProcessInput())
-            {
-                return GetAimInputHeld() == false && aimInputWasHeld == true;
-                // return Input.GetButtonUp(GameConstants.k_ButtonNameAim);
-            }
-
-            return false;
-        }
-
-        // íŒŒì´ì–´ ë²„íŠ¼ ëˆ„ë¥´ê¸° ì‹œìž‘
+        //ÆÄÀÌ¾î ¹öÆ° ´©¸£±â ½ÃÀÛ
         public bool GetFireInputDown()
         {
-            if(CanProcessInput())
+            if (CanProcessInput())
             {
                 return GetFireInputHeld() == true && fireInputWasHeld == false;
-                // return Input.GetButtonDown(GameConstants.k_ButtonNameFire);
+                //return Input.GetButtonDown(GameConstants.k_ButtonNameFire);
             }
-
             return false;
         }
 
-        // íŒŒì´ì–´ ë²„íŠ¼ ëˆ„ë¥´ëŠ” ì¤‘
-        public bool GetFireInputHeld()
-        {
-            if(CanProcessInput())
-            {
-                // return GetFireInputHeld() == true && fireInputWasHeld == false;
-                return Input.GetButton(GameConstants.k_ButtonNameFire);
-            }
-
-            return false;
-        }
-
-        // íŒŒì´ì–´ ë²„íŠ¼ ëˆ„ë¥´ê¸° ë
+        //ÆÄÀÌ¾î ¹öÆ° ´©¸£±â ³¡
         public bool GetFireInputUp()
         {
-            if(CanProcessInput())
+            if (CanProcessInput())
             {
                 return GetFireInputHeld() == false && fireInputWasHeld == true;
-                // return Input.GetButtonUp(GameConstants.k_ButtonNameFire);
+                //return Input.GetButtonUp(GameConstants.k_ButtonNameFire);
             }
-
             return false;
         }
+
+        //ÆÄÀÌ¾î ¹öÆ° ´©¸£´Â Áß
+        public bool GetFireInputHeld()
+        {
+            if (CanProcessInput())
+            {
+                return Input.GetButton(GameConstants.k_ButtonNameFire);
+            }
+            return false;
+        }
+
+
     }
 }

@@ -196,7 +196,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0.607
+  m_FillAmount: 0.559
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -211,8 +211,8 @@ GameObject:
   m_Component:
   - component: {fileID: 645032500860478886}
   - component: {fileID: 645032500860478887}
-  - component: {fileID: 6603108135498730459}
-  - component: {fileID: 3704869438279120505}
+  - component: {fileID: 3268909784133744544}
+  - component: {fileID: 8684264634113539166}
   m_Layer: 5
   m_Name: AmmoCounter
   m_TagString: Untagged
@@ -255,7 +255,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6603108135498730459
+--- !u!114 &3268909784133744544
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -264,7 +264,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 645032500860478885}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a10594b51fa7c045afea5cfda049b66, type: 3}
+  m_Script: {fileID: 11500000, guid: f69515666ed1b944f94229ffa1cff5b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponIndexText: {fileID: 2904203937318842817}
@@ -272,8 +272,8 @@ MonoBehaviour:
   ammoFillSharpness: 10
   canvasGroup: {fileID: 436243220387352472}
   unSelectedOpacity: 0.5
-  fillBarColorChange: {fileID: 3704869438279120505}
---- !u!114 &3704869438279120505
+  fillBarColorChange: {fileID: 8684264634113539166}
+--- !u!114 &8684264634113539166
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 645032500860478885}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b2ac89038e5ef14295236a2e6094775, type: 3}
+  m_Script: {fileID: 11500000, guid: d090eb1152cab504282580ffe181db21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   foregroundImage: {fileID: 645032500597732956}

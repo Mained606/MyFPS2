@@ -1,6 +1,5 @@
-using UnityEngine;
-using UnityEngine.Events;
 using Unity.FPS.Gameplay;
+using UnityEngine;
 
 namespace Unity.FPS.UI
 {
@@ -8,24 +7,26 @@ namespace Unity.FPS.UI
     {
         #region Variables
         public GameObject scopeUI;
-        private PlayerWeaponsManager playerWeaponsManager;
+
+        private PlayerWeaponsManager weaponsManager;
         #endregion
 
-        void Start()
+        private void Start()
         {
-            playerWeaponsManager = FindObjectOfType<PlayerWeaponsManager>();
-
-            playerWeaponsManager.OnScopedWeapon += ShowScopeUI;
-            playerWeaponsManager.OffScopedWeapon += HideScopeUI;
+            //참조
+            weaponsManager = GameObject.FindObjectOfType<PlayerWeaponsManager>();
+            //Action 함수 등록
+            weaponsManager.OnScopedWeapon += OnScope;
+            weaponsManager.OffScopedWeapon += OffScope;
         }
 
-        public void ShowScopeUI()
+        public void OnScope()
         {
             scopeUI.SetActive(true);
         }
 
-        public void HideScopeUI()
-        {
+        public void OffScope()
+        { 
             scopeUI.SetActive(false);
         }
     }

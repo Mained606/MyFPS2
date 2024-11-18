@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2225486910712267856}
   - component: {fileID: 7583640433812654122}
-  - component: {fileID: 6705232196896210088}
-  - component: {fileID: -6802427045829188071}
+  - component: {fileID: 4156686337131874957}
+  - component: {fileID: 2178505820281072163}
   m_Layer: 6
   m_Name: Weapon_Launcher
   m_TagString: Untagged
@@ -133,7 +133,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &6705232196896210088
+--- !u!114 &4156686337131874957
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,39 +142,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 2225486910712267859}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8210ca6765ccb64e99f985f7c8ebdf0, type: 3}
+  m_Script: {fileID: 11500000, guid: 78260434ba86ecb42a417fdcb2373d8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponRoot: {fileID: 5646165488041817916}
-  switchWeaponSfx: {fileID: 8300000, guid: 70dcbe7592dd1c748b41e27c91a48302, type: 3}
+  switchWeaponSfx: {fileID: 8300000, guid: 2150c7cdca78a7f4e8f0f4a7a70e1d86, type: 3}
   shootType: 2
   maxAmmo: 4
   delayBetweenShots: 2
   weaponMuzzle: {fileID: 2749496858225023403}
   muzzleFlashPrefab: {fileID: 0}
-  shootSfx: {fileID: 8300000, guid: 35c579ec299edea4f921c14407a408a1, type: 3}
-  crossHairDefault:
-    CrossHairSprite: {fileID: 21300000, guid: b46456f40fe964f459d43b7d4a7f5fbf, type: 3}
+  shootSfx: {fileID: 8300000, guid: 9ec01afc1fd44dd4f812422e00841c3a, type: 3}
+  crosshairDefault:
+    CrossHairSprite: {fileID: 21300000, guid: 42543baa3d2c16b48a60071a209e7a6d, type: 3}
     CrossHairSize: 100
-    CrossHairColor: {r: 0.5019608, g: 1, b: 0, a: 0.6745098}
-  crossHairTargetInSight:
-    CrossHairSprite: {fileID: 21300000, guid: b46456f40fe964f459d43b7d4a7f5fbf, type: 3}
+    CrossHairColor: {r: 0.5019608, g: 1, b: 0, a: 0.59607846}
+  crosshairTargetInSight:
+    CrossHairSprite: {fileID: 21300000, guid: 42543baa3d2c16b48a60071a209e7a6d, type: 3}
     CrossHairSize: 100
     CrossHairColor: {r: 0.5019608, g: 1, b: 0, a: 1}
   aimZoomRatio: 0.8
-  aimPositionOffset: {x: 0, y: 0, z: 0}
+  aimOffset: {x: 0, y: 0, z: 0}
   recoilForce: 0.5
-  projectilePrefab: {fileID: 3775632570833938171, guid: 0e23901b938cf4f4eb86850d912715eb,
+  projectilePrefab: {fileID: 3274817856681570123, guid: 0e23901b938cf4f4eb86850d912715eb,
     type: 3}
   bulletsPerShot: 1
   bulletSpreadAngle: 0
   ammoUseOnStartCharge: 1
   ammoUsageRateWhileCharging: 1
-  lastChargeTriggerTimestamp: 0
+  lastChargeTriggerTimeStamp: 0
   ammoReloadRate: 1
   ammoReloadDelay: 2
   automaticReload: 1
---- !u!114 &-6802427045829188071
+--- !u!114 &2178505820281072163
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -183,7 +183,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2225486910712267859}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e68f20d51dd3b914eb749e073c7641c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b59de5a80008cc428ba64d7be2e39ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   chargingObject: {fileID: 2990922162098100103}
@@ -204,8 +204,8 @@ MonoBehaviour:
   spiningSpeed:
     Min: 50
     Max: 1500
-  chargeSound: {fileID: 8300000, guid: dc82a838adc71cd44b31c1b3ccf9dad3, type: 3}
-  loopChargeWeaponSfx: {fileID: 8300000, guid: d0f331d8524a0d4409af0cddefe91112, type: 3}
+  chargeSound: {fileID: 8300000, guid: 2b5b5276ee917964684550c455701f36, type: 3}
+  loopChargeWeaponSfx: {fileID: 8300000, guid: bd57dd63d013eee42963a8f7e33646f7, type: 3}
   useProceduralPitchOnLoop: 0
   maxProceduralPitchValue: 2
 --- !u!1 &2990922162098100101
@@ -898,11 +898,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2990922162098195373}
     m_Modifications:
-    - target: {fileID: 3535881425241086519, guid: 21c8bd050f24da54285f8a3987ee6253,
-        type: 3}
-      propertyPath: m_Materials.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5338991494728519494, guid: 21c8bd050f24da54285f8a3987ee6253,
         type: 3}
       propertyPath: m_RootOrder

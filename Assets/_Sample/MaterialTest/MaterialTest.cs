@@ -10,18 +10,20 @@ namespace MySample
         private MaterialPropertyBlock materialPropertyBlock;
         #endregion
 
-        void Start ()
+        // Start is called before the first frame update
+        void Start()
         {
+            //ÂüÁ¶
             renderer = GetComponent<Renderer>();
 
-            //ë¨¸í…Œë¦¬ì–¼ ì»¬ëŸ¬ ë°”ê¾¸ê¸°
+            //¸ÞÅÍ¸®¾ó ÄÃ·¯ ¹Ù²Ù±â
             //renderer.material.SetColor("_BaseColor", Color.red);
-            // renderer.sharedMaterial.SetColor("_BaseColor", Color.red);
+            //renderer.sharedMaterial.SetColor("_BaseColor", Color.red);
 
             //
             materialPropertyBlock = new MaterialPropertyBlock();
             materialPropertyBlock.SetColor("_BaseColor", Color.red);
             renderer.SetPropertyBlock(materialPropertyBlock);
         }
-    }    
+    }
 }

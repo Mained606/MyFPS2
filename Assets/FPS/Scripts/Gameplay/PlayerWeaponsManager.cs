@@ -1,121 +1,121 @@
 using System.Collections.Generic;
+using Unity.FPS.Game;
 using UnityEngine;
 using UnityEngine.Events;
-using Unity.FPS.Game;
 
 namespace Unity.FPS.Gameplay
 {
     /// <summary>
-    /// ë¬´ê¸° êµì²´ ìƒíƒœ
+    /// ¹«±â ±³Ã¼ »óÅÂ
     /// </summary>
-    public enum WeaponSwitchState
+    public enum WeaponSwithState
     {
         Up,
         Down,
         PutDownPrvious,
-        PutUpNew
+        PutUpNew,
     }
 
     /// <summary>
-    /// í”Œë ˆì´ì–´ê°€ ê°€ì§„ ë¬´ê¸°(WeaponController)ë“¤ì„ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
+    /// ÇÃ·¹ÀÌ¾î°¡ °¡Áø ¹«±â(WeaponController)µéÀ» °ü¸®ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class PlayerWeaponsManager : MonoBehaviour
     {
         #region Variables
-        // ë¬´ê¸° ì§€ê¸‰ - ê²Œì„ì„ ì‹œì‘í•  ë•Œ ì²˜ìŒ ìœ ì €ì—ê²Œ ì§€ê¸‰ë˜ëŠ” ë¬´ê¸° ë¦¬ìŠ¤íŠ¸
+        //¹«±â Áö±Ş - °ÔÀÓÀ» ½ÃÀÛÇÒ¶§ Ã³À½ À¯Àú¿¡°Ô Áö±ŞµÇ´Â ¹«±â ¸®½ºÆ®(ÀÎº¥Åä¸®)
         public List<WeaponController> startingWeapons = new List<WeaponController>();
 
-        // ë¬´ê¸° ì¥ì°©
-        // ë¬´ê¸°ë¥¼ ì¥ì°©í•˜ëŠ” ì˜¤ë¸Œì íŠ¸
+        //¹«±â ÀåÂø
+        //¹«±â¸¦ ÀåÂøÇÏ´Â ¿ÀºêÁ§Æ®
         public Transform weaponParentSocket;
 
-        // í”Œë ˆì´ì–´ê°€ ê²Œì„ì¤‘ì— ë“¤ê³  ë‹¤ë‹ˆëŠ” ë¬´ê¸° ë¦¬ìŠ¤íŠ¸
+        //ÇÃ·¹ÀÌ¾î°¡ °ÔÀÓÁß¿¡ µé°í ´Ù´Ï´Â ¹«±â ¸®½ºÆ®
         private WeaponController[] weaponSlots = new WeaponController[9];
+        //¹«±â ¸®½ºÆ®(½½·Ô)Áß È°¼ºÈ­µÈ ¹«±â¸¦ °ü¸®ÇÏ´Â ÀÎµ¦½º
+        public int ActiveWeaponIndex { get; private set; }
 
-        // ë¬´ê¸° ë¦¬ìŠ¤íŠ¸(ìŠ¬ë¡¯)ì¤‘ í™œì„±í™”ëœ ë¬´ê¸°ë¥¼ ê´€ë¦¬í•˜ëŠ” ì¸ë±ìŠ¤
-        public int ActiveWeaponIndex {get; private set;} 
+        //¹«±â ±³Ã¼
+        public UnityAction<WeaponController> OnSwitchToWeapon;  //¹«±â ±³Ã¼ÇÒ¶§¸¶´Ù µî·ÏµÈ ÇÔ¼ö È£Ãâ
+        public UnityAction<WeaponController, int> OnAddedWeapon;    //¹«±â Ãß°¡ÇÒ¶§¸¶´Ù µî·ÏµÈ ÇÔ¼ö È£Ãâ
+        public UnityAction<WeaponController, int> OnRemoveWeapon;   //ÀåÂøµÈ ¹«±â¸¦ Á¦°ÅÇÒ¶§¸¶´Ù µî·ÏµÈ ÇÔ¼ö È£Ãâ
 
-        // ë¬´ê¸° êµì²´
-        public UnityAction<WeaponController> OnSwitchToWeapon;  // ë¬´ê¸° êµì²´ì‹œ ë“±ë¡ëœ í•¨ìˆ˜ í˜¸ì¶œ
-        public UnityAction<WeaponController, int> OnAddedWeapon;    // ë¬´ê¸° ì¶”ê°€í•  ë•Œë§ˆë‹¤ ë“±ë¡ëœ í•¨ìˆ˜ í˜¸ì¶œ
-        public UnityAction<WeaponController, int> OnRemoveWeapon;   // ì¥ì°©ëœ ë¬´ê¸°ë¥¼ ì œê±°í•  ë•Œë§ˆë‹¤ ë“±ë¡ëœ í•¨ìˆ˜ í˜¸ì¶œ 
-
-        private WeaponSwitchState weaponSwitchState;        // ë¬´ê¸° êµì²´ì‹œ ìƒíƒœ
+        private WeaponSwithState weaponSwithState;          //¹«±â ±³Ã¼½Ã »óÅÂ
 
         private PlayerInputHandler playerInputHandler;
 
-        //ë¬´ê¸° êµì²´ì‹œ ê³„ì‚°ë˜ëŠ” ìµœì¢… ìœ„ì¹˜
+        //¹«±â ±³Ã¼½Ã °è»êµÇ´Â ÃÖÁ¾ À§Ä¡
         private Vector3 weaponMainLocalPosition;
 
         public Transform defaultWeaponPostion;
         public Transform downWeaponPostion;
-        public Transform aimWeaponPostion;
+        public Transform aimingWeaponPosition;
 
-        private int weaponSwitchNewIndex;       //ìƒˆë¡œ ë°”ë€ŒëŠ” ë¬´ê¸° ì¸ë±ìŠ¤
+        private int weaponSwitchNewIndex;           //»õ·Î ¹Ù²î´Â ¹«±â ÀÎµ¦½º
 
         private float weaponSwitchTimeStarted = 0f;
         [SerializeField] private float weaponSwitchDelay = 1f;
 
-        // ì  í¬ì°©
-        public bool IsPointingAtEnemy {get; private set;}    // ì  í¬ì°© ì—¬ë¶€
-        public Camera weaponCamera;                          // weaponCameraì—ì„œ Rayë¡œ ì  í¬ì°©
+        //Àû Æ÷Âø
+        public bool IsPointingAtEnemy { get; private set; }         //Àû Æ÷Âø ¿©ºÎ
+        public Camera weaponCamera;                                 //weaponCamera¿¡¼­ Ray·Î Àû È®ÀÎ
 
-        // ì¡°ì¤€
-        // ì¹´ë©”ë¼ ì„¸íŒ…
+        //Á¶ÁØ
+        //Ä«¸Ş¶ó ¼ÂÆÃ
         private PlayerCharacterController playerCharacterController;
-        public float defaultFov = 60f;          // ê¸°ë³¸ ì¹´ë©”ë¼ ì‹œì•¼
-        public float weaponFovMultiplier = 1f; // ë¬´ê¸° ì¡°ì¤€ ì‹œ ì¹´ë©”ë¼ ì‹œì•¼ ì¡°ì ˆ ê³„ìˆ˜
+        [SerializeField] private float defaultFov = 60f;          //Ä«¸Ş¶ó ±âº» FOV °ª
+        [SerializeField] private float weaponFovMultiplier = 1f;       //FOV ¿¬»ê °è¼ö
 
-        public bool IsAiming {get; private set;}
-        [SerializeField] private float aimingAnimationSpeed = 10f;
+        public bool IsAiming { get; private set; }                      //¹«±â Á¶ÁØ ¿©ºÎ
+        [SerializeField] private float aimingAnimationSpeed = 10f;      //¹«±â ÀÌµ¿,Fov ¿¬Ãâ Lerp¼Óµµ
 
-        // í”ë“¤ë¦¼
+        //Èçµé¸²
         [SerializeField] private float bobFrequency = 10f;
         [SerializeField] private float bobSharpness = 10f;
-        [SerializeField] private float defaultBobAmount = 0.05f; // í‰ìƒì‹œ í”ë“¤ë¦¼ ëŸ‰
-        [SerializeField] private float aimingBobAmount = 0.02f; // ì¡°ì¤€ì‹œ í”ë“¤ë¦¼ ëŸ‰
+        [SerializeField] private float defaultBobAmount = 0.05f;         //Æò»ó½Ã Èçµé¸² ·®
+        [SerializeField] private float aimingBobAmount = 0.02f;          //Á¶ÁØÁß Èçµé¸² ·®
 
-        private float weaponBobFactor;  // í”ë“¤ë¦¼ ê³„ìˆ˜
-        private Vector3 lastCharacterPosition;  // í˜„ì¬ í”„ë ˆì„ì—ì„œì˜ ì´ë™ì†ë„ë¥¼ êµ¬í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
+        private float weaponBobFactor;          //Èçµé¸² °è¼ö
+        private Vector3 lastCharacterPosition;  //ÇöÀç ÇÁ·¹ÀÓ¿¡¼­ÀÇ ÀÌµ¿¼Óµµ¸¦ ±¸ÇÏ±â À§ÇÑ º¯¼ö
 
-        private Vector3 weaponBobLocalPosition;  // ì´ë™ì‹œ í”ë“¤ë¦° ëŸ‰ ìµœì¢… ê³„ì‚°ê°’, ì´ë™í•˜ì§€ ì•Šìœ¼ë©´ 0
+        private Vector3 weaponBobLocalPosition; //ÀÌµ¿½Ã Èçµé¸° ·® ÃÖÁ¾ °è»ê°ª, ÀÌµ¿ÇÏÁö ¾ÊÀ¸¸é 0
 
-        // ë°˜ë™
-        [SerializeField] private float recoilSharpness = 50f; // ë’¤ë¡œ ë°€ë¦¬ëŠ” ì´ë™ ì†ë„
-        private float maxRecoilDistance = 0.5f; // ë°˜ë™ì‹œ ë’¤ë¡œ ë°€ë¦´ ìˆ˜ ìˆëŠ” ìµœëŒ€ ê±°ë¦¬
-        private float recoilRepositionSharpness = 10f; // ì œìë¦¬ë¡œ ëŒì•„ì˜¤ëŠ” ì†ë„
-        private Vector3 accumulateRecoil; // ë°˜ë™ ëˆ„ì ê°’
+        //¹İµ¿
+        [SerializeField] private float recoilSharpness = 50f;       //µÚ·Î ¹Ğ¸®´Â ÀÌµ¿ ¼Óµµ
+        [SerializeField] private float maxRecoilDistance = 0.5f;    //¹İµ¿½Ã µÚ·Î ¹Ğ¸±¼ö ÀÖ´Â ÃÖ´ë°Å¸®
+        private float recolieRepositionSharpness = 10f;             //Á¦ÀÚ¸®·Î µ¹¾Æ¿À´Â ¼Óµµ
+        private Vector3 accumulateRecoil;                           //¹İµ¿½Ã µÚ·Î ¹Ğ¸®´Â ·®
 
-        private Vector3 weaponRecoilLocalPosition; // ë°˜ë™ ìœ„ì¹˜
+        private Vector3 weaponRecoilLocalPosition;      //¹İµ¿½Ã ÀÌµ¿ÇÑ ÃÖÁ¾ °è»ê°ª, ¹İµ¿ÈÄ Á¦ÀÚ¸®¿¡ µ¹¾Æ¿À¸é 0
 
-        // ì¡°ì¤€ UI
-        private bool isScoped = false;
-        [SerializeField]private float distanceOnScoped = 0.05f;
+        //Àú°İ ¸ğµå
+        private bool isScopeOn = false;
+        [SerializeField] private float distanceOnScope = 0.1f;
 
-        public UnityAction OnScopedWeapon;
-        public UnityAction OffScopedWeapon;
+        public UnityAction OnScopedWeapon;              //Àú°İ ¸ğµå ½ÃÀÛ½Ã µî·ÏµÈ ÇÔ¼ö È£Ãâ
+        public UnityAction OffScopedWeapon;             //Àú°İ ¸ğµå ³¡³¾¶§ µî·ÏµÈ ÇÔ¼ö È£Ãâ
         #endregion
 
-        void Start()
+        private void Start()
         {
-            // ì°¸ì¡°
+            //ÂüÁ¶
             playerInputHandler = GetComponent<PlayerInputHandler>();
             playerCharacterController = GetComponent<PlayerCharacterController>();
 
-            // ì´ˆê¸°í™”
+            //ÃÊ±âÈ­
             ActiveWeaponIndex = -1;
-            weaponSwitchState = WeaponSwitchState.Down;
+            weaponSwithState = WeaponSwithState.Down;
 
-            // ì•¡í‹°ë¸Œ ë¬´ê¸° show í•¨ìˆ˜ ë“±ë¡
+            //¾×Æ¼ºê ¹«±â show ÇÔ¼ö µî·Ï
             OnSwitchToWeapon += OnWeaponSwitched;
 
+            //Àú°İ ¸ğµå ÇÔ¼ö µî·Ï
             OnScopedWeapon += OnScope;
             OffScopedWeapon += OffScope;
 
-            // FOV ì´ˆê¸°í™”
+            //Fov ÃÊ±â°ª ¼³Á¤
             SetFov(defaultFov);
 
-            // ì§€ê¸‰ ë°›ì€ ë¬´ê¸° ì¥ì°©
+            //Áö±Ş ¹ŞÀº ¹«±â ÀåÂø
             foreach (var weapon in startingWeapons)
             {
                 AddWeapon(weapon);
@@ -123,66 +123,66 @@ namespace Unity.FPS.Gameplay
             SwitchWeapon(true);
         }
 
-        void Update()
+        private void Update()
         {
-            // í˜„ì¬ ì•¡í‹°ë¸Œ ë¬´ê¸°
+            //ÇöÀç ¾×Æ¼ºê ¹«±â
             WeaponController activeWeapon = GetActiveWeapon();
 
-            if(weaponSwitchState == WeaponSwitchState.Up)
+            if(weaponSwithState == WeaponSwithState.Up)
             {
-                // ì¡°ì¤€ ì…ë ¥ê°’ ì²˜ë¦¬
+                //Á¶ÁØ ÀÔ·Â°ª Ã³¸®
                 IsAiming = playerInputHandler.GetAimInputHeld();
 
-                // ì €ê²© ëª¨ë“œ ì²˜ë¦¬
+                //Àú°İ ¸ğµå Ã³¸®
                 if(activeWeapon.shootType == WeaponShootType.Sniper)
                 {
                     if(playerInputHandler.GetAimInputDown())
                     {
-                        // OnScopedWeapon?.Invoke();
-                        isScoped = true;
+                        //Àú°İ ¸ğµå ½ÃÀÛ
+                        isScopeOn = true;
+                        //OnScopedWeapon?.Invoke();
                     }
                     if(playerInputHandler.GetAimInputUp())
                     {
-                        isScoped = false;
+                        //Àú°İ ¸ğµå ³¡
                         OffScopedWeapon?.Invoke();
                     }
                 }
 
-                // ìŠ› ì²˜ë¦¬
+                //½¸ Ã³¸®
                 bool isFire = activeWeapon.HandleShootInputs(
                     playerInputHandler.GetFireInputDown(),
                     playerInputHandler.GetFireInputHeld(),
-                    playerInputHandler.GetFireInputUp()
-                    );
+                    playerInputHandler.GetFireInputUp());
 
-                if(isFire)
+                if (isFire)
                 {
-                    // ë°˜ë™ íš¨ê³¼
+                    //¹İµ¿ È¿°ú
                     accumulateRecoil += Vector3.back * activeWeapon.recoilForce;
                     accumulateRecoil = Vector3.ClampMagnitude(accumulateRecoil, maxRecoilDistance);
                 }
             }
 
-            if(!IsAiming && (weaponSwitchState == WeaponSwitchState.Up || weaponSwitchState == WeaponSwitchState.Down))
+            if (!IsAiming && (weaponSwithState == WeaponSwithState.Up || weaponSwithState == WeaponSwithState.Down))
             {
                 int switchWeaponInput = playerInputHandler.GetSwitchWeaponInput();
-                if(switchWeaponInput != 0f)
+                if (switchWeaponInput != 0)
                 {
-                    bool switchUp = switchWeaponInput > 0f;
+                    bool switchUp = switchWeaponInput > 0;
                     SwitchWeapon(switchUp);
                 }
             }
 
-            // ì  í¬ì°©
+            //Àû Æ÷Âø
             IsPointingAtEnemy = false;
-            if(activeWeapon)
+            if (activeWeapon)
             {
                 RaycastHit hit;
-                if(Physics.Raycast(weaponCamera.transform.position, weaponCamera.transform.forward, out hit, 300f))
+                if (Physics.Raycast(weaponCamera.transform.position, weaponCamera.transform.forward, out hit, 300f))
                 {
+                    //Äİ¶óÀÌ´õ Ã¼Å© - Àû(Damageable)
                     Damageable damageable = hit.collider.GetComponent<Damageable>();
-                    // Health health = hit.collider.GetComponent<Health>();
-                    if(damageable)
+                    if (damageable)
                     {
                         IsPointingAtEnemy = true;
                     }
@@ -190,123 +190,129 @@ namespace Unity.FPS.Gameplay
             }
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             UpdateWeaponBob();
             UpdateWeaponRecoil();
             UpdateWeaponAiming();
             UpdateWeaponSwitching();
 
-            // ë¬´ê¸° ìµœì¢… ìœ„ì¹˜
+            //¹«±â ÃÖÁ¾ À§Ä¡
             weaponParentSocket.localPosition = weaponMainLocalPosition + weaponBobLocalPosition + weaponRecoilLocalPosition;
         }
 
-        // ë°˜ë™
+        //¹İµ¿
         void UpdateWeaponRecoil()
         {
             if(weaponRecoilLocalPosition.z >= accumulateRecoil.z * 0.99f)
             {
                 weaponRecoilLocalPosition = Vector3.Lerp(weaponRecoilLocalPosition, accumulateRecoil,
-                recoilSharpness * Time.deltaTime);
+                    recoilSharpness * Time.deltaTime);
             }
             else
             {
                 weaponRecoilLocalPosition = Vector3.Lerp(weaponRecoilLocalPosition, Vector3.zero,
-                    recoilRepositionSharpness * Time.deltaTime);
+                    recolieRepositionSharpness * Time.deltaTime);
                 accumulateRecoil = weaponRecoilLocalPosition;
             }
         }
 
-        // ì¹´ë©”ë¼ FOV ê°’ ì„¤ì • ì¤Œ ì¸, ì¤Œ ì•„ì›ƒ
+        //Ä«¸Ş¶ó Fov °ª ¼ÂÆÃ: ÁÜÀÎ, ÁÜ¾Æ¿ô
         private void SetFov(float fov)
         {
             playerCharacterController.PlayerCamera.fieldOfView = fov;
             weaponCamera.fieldOfView = fov * weaponFovMultiplier;
         }
 
-        // ë¬´ê¸° ì¡°ì¤€ì— ë”°ë¥¸ ì—°ì¶œ
+        //¹«±â Á¶ÁØ¿¡ µû¸¥ ¿¬Ãâ: ¹«±âÀ§Ä¡ Á¶Á¤, Fov°ª Á¶Á¤
         void UpdateWeaponAiming()
         {
-            // ë¬´ê¸°ë¥¼ ë“¤ê³  ìˆì„ ë•Œë§Œ ì¡°ì¤€
-            if(weaponSwitchState == WeaponSwitchState.Up)
+            //¹«±â¸¦ µé°í ÀÖÀ»¶§¸¸ Á¶ÁØ °¡´É
+            if (weaponSwithState == WeaponSwithState.Up)
             {
                 WeaponController activeWeapon = GetActiveWeapon();
 
-                if(IsAiming && activeWeapon) // ì¡°ì¤€ì‹œ: ë””í´íŠ¸ -> Aiming ìœ„ì¹˜ë¡œ ì´ë™
+                if (IsAiming && activeWeapon)    //Á¶ÁØ½Ã: µğÆúÆ® -> Aiming À§Ä¡·Î ÀÌµ¿, fov: µğÆúÆ® -> aimZoomRatio
                 {
-                    weaponMainLocalPosition = Vector3.Lerp(weaponMainLocalPosition, 
-                        aimWeaponPostion.localPosition + activeWeapon.aimPositionOffset, 
-                        aimingAnimationSpeed * Time.deltaTime);
-                    
-                    if(isScoped)
-                    {
-                        float distance = Vector3.Distance(weaponMainLocalPosition, aimWeaponPostion.localPosition + activeWeapon.aimPositionOffset);
-                        if(distance < distanceOnScoped)
-                        {
-                            OnScopedWeapon?.Invoke();
-                            isScoped = false;
-                        }
-                    }
-                    
-                    float fov = Mathf.Lerp(playerCharacterController.PlayerCamera.fieldOfView, defaultFov * activeWeapon.aimZoomRatio, aimingAnimationSpeed * Time.deltaTime);
-                    SetFov(fov);
-                    
-                }
-                else // ì¡°ì¤€ ì•„ë‹ì‹œ: Aiming ìœ„ì¹˜ -> ë””í´íŠ¸ ìœ„ì¹˜ë¡œ ì´ë™
-                {
-                    weaponMainLocalPosition = Vector3.Lerp(weaponMainLocalPosition, 
-                        defaultWeaponPostion.localPosition, 
+                    weaponMainLocalPosition = Vector3.Lerp(weaponMainLocalPosition,
+                        aimingWeaponPosition.localPosition + activeWeapon.aimOffset,
                         aimingAnimationSpeed * Time.deltaTime);
 
-                    float fov = Mathf.Lerp(playerCharacterController.PlayerCamera.fieldOfView, defaultFov, aimingAnimationSpeed * Time.deltaTime);
+                    //Àú°İ ¸ğµå ½ÃÀÛ
+                    if(isScopeOn)
+                    {
+                        //weaponMainLocalPosition, ¸ñÇ¥ÁöÁ¡±îÁöÀÇ °Å¸®¸¦ ±¸ÇÑ´Ù
+                        float dist = Vector3.Distance(weaponMainLocalPosition, aimingWeaponPosition.localPosition + activeWeapon.aimOffset);
+                        if(dist < distanceOnScope)
+                        {
+                            OnScopedWeapon?.Invoke();
+                            isScopeOn = false;
+                        }
+                    }
+                    else
+                    {
+                        float fov = Mathf.Lerp(playerCharacterController.PlayerCamera.fieldOfView,
+                            activeWeapon.aimZoomRatio * defaultFov, aimingAnimationSpeed * Time.deltaTime);
+                        SetFov(fov);
+                    }
+                }
+                else            //Á¶ÁØÀÌ Ç®·ÈÀ»¶§: Aiming À§Ä¡ -> µğÆúÆ® À§Ä¡·Î ÀÌµ¿ fov: aimZoomRatio -> default
+                {
+                    weaponMainLocalPosition = Vector3.Lerp(weaponMainLocalPosition,
+                        defaultWeaponPostion.localPosition,
+                        aimingAnimationSpeed * Time.deltaTime);
+                    float fov = Mathf.Lerp(playerCharacterController.PlayerCamera.fieldOfView,
+                        defaultFov, aimingAnimationSpeed * Time.deltaTime);
                     SetFov(fov);
                 }
             }
         }
 
-        // ì´ë™ì— ì˜í•œ ë¬´ê¸° í”ë“¤ë¦° ê°’ êµ¬í•˜ê¸°
+        //ÀÌµ¿¿¡ ÀÇÇÑ ¹«±â Èçµé¸° °ª ±¸ÇÏ±â
         void UpdateWeaponBob()
         {
-            if(Time.timeScale > 0f)
+            if(Time.deltaTime > 0)
             {
-                // í”Œë ˆì´ì–´ê°€ í•œ í”„ë ˆì„ë™ì•ˆ ì´ë™í•œ ê±°ë¦¬
-                // playerCharacterController.transform.position - lastCharacterPosition
-                // í˜„ì¬ í”„ë ˆì„ì—ì„œ í”Œë ˆì´ì–´ ì´ë™ ì†ë„
-                Vector3 playerCharacterVelocity = (playerCharacterController.transform.position - lastCharacterPosition) / Time.deltaTime;
+                //ÇÃ·¹ÀÌ¾î°¡ ÇÑ ÇÁ·¹ÀÓµ¿¾È ÀÌµ¿ÇÑ °Å¸®
+                //playerCharacterController.transform.position - lastCharacterPosition
+                //ÇöÀç ÇÁ·¹ÀÓ¿¡¼­ ÇÃ·¹ÀÌ¾î ÀÌµ¿ ¼Óµµ
+                Vector3 playerCharacterVelocity =
+                    (playerCharacterController.transform.position - lastCharacterPosition)/Time.deltaTime;
 
-                // í”ë“¤ë¦¼ ê³„ìˆ˜
                 float charactorMovementFactor = 0f;
                 if(playerCharacterController.IsGrounded)
                 {
-                    charactorMovementFactor = Mathf.Clamp01(playerCharacterVelocity.magnitude / 
+                    charactorMovementFactor = Mathf.Clamp01(playerCharacterVelocity.magnitude /
                         (playerCharacterController.MaxSpeedOnGround * playerCharacterController.SprintSpeedModifier));
                 }
 
-                //ì†ë„ì— ì˜í•œ í”ë“¤ë¦¼ ê³„ìˆ˜
+                //¼Óµµ¿¡ ÀÇÇÑ Èçµé¸² °è¼ö
                 weaponBobFactor = Mathf.Lerp(weaponBobFactor, charactorMovementFactor, bobSharpness * Time.deltaTime);
 
-                // í”ë“¤ë¦¼ ëŸ‰(ì¡°ì¤€ì‹œ, í‰ìƒì‹œ)
-                float bobAmout = IsAiming ? aimingBobAmount : defaultBobAmount;
+                //Èçµé¸²·®(Á¶ÁØ½Ã, Æò»ó½Ã)
+                float bobAmount = IsAiming ? aimingBobAmount : defaultBobAmount;
                 float frequency = bobFrequency;
-                // ì¢Œìš° í”ë“¤ë¦¼
-                float vBobValue = Mathf.Sin(frequency * Time.time) * bobAmout * weaponBobFactor;
-                float hBobValue = ((Mathf.Sin(frequency * Time.time) * 0.5f) + 0.5f) * bobAmout * weaponBobFactor;
+                //ÁÂ¿ì Èçµé¸²
+                float hBobValue = Mathf.Sin(Time.time * frequency) * bobAmount * weaponBobFactor;
+                //À§¾Æ·¡ Èçµé¸² (ÁÂ¿ì Èçµé¸²ÀÇ Àı¹İ)
+                float vBobValue = ((Mathf.Sin(Time.time * frequency) * 0.5f) + 0.5f) * bobAmount * weaponBobFactor;
 
-                // í”ë“¤ë¦¼ ìµœì¢… ê³„ì‚°ê°’
+                //Èçµé¸² ÃÖÁ¾ º¯¼ö¿¡ Àû¿ë
                 weaponBobLocalPosition.x = hBobValue;
                 weaponBobLocalPosition.y = Mathf.Abs(vBobValue);
+                //Debug.Log($"weaponBobLocalPosition: {weaponBobLocalPosition}");
 
-                // í”Œë ˆì´ì–´ì˜ í˜„ì¬ í”„ë ˆì„ì˜ ë§ˆì§€ë§‰ ìœ„ì¹˜ë¥¼ ì €ì¥
+                //ÇÃ·¹ÀÌ¾îÀÇ ÇöÀç ÇÁ·¹ÀÓÀÇ ¸¶Áö¸· À§Ä¡¸¦ ÀúÀå
                 lastCharacterPosition = playerCharacterController.transform.position;
             }
         }
 
-        // ìƒíƒœì— ë”°ë¥¸ ë¬´ê¸° ì—°ì¶œ
+        //»óÅÂ¿¡ µû¸¥ ¹«±â ¿¬Ãâ
         void UpdateWeaponSwitching()
         {
-            //Lerp ë³€ìˆ˜
+            //Lerp º¯¼ö
             float switchingTimeFactor = 0f;
-            if(weaponSwitchDelay == 0f)
+            if (weaponSwitchDelay == 0f)
             {
                 switchingTimeFactor = 1f;
             }
@@ -315,14 +321,14 @@ namespace Unity.FPS.Gameplay
                 switchingTimeFactor = Mathf.Clamp01((Time.time - weaponSwitchTimeStarted) / weaponSwitchDelay);
             }
 
-            // ì§€ì—°ì‹œê°„ ì´í›„ ë¬´ê¸° ìƒíƒœ ë°”ê¾¸ê¸° ì—°ì¶œ
-            if(switchingTimeFactor >= 1f)
+            //Áö¿¬½Ã°£ÀÌÈÄ ¹«±â »óÅÂ ¹Ù²Ù±â
+            if (switchingTimeFactor >= 1f)
             {
-                if(weaponSwitchState == WeaponSwitchState.PutDownPrvious)
+                if (weaponSwithState == WeaponSwithState.PutDownPrvious)
                 {
-                    // í˜„ì¬ ë¬´ê¸° false, ìƒˆë¡œìš´ ë¬´ê¸° true
+                    //ÇöÀç¹«±â false, »õ·Î¿î ¹«±â true
                     WeaponController oldWeapon = GetActiveWeapon();
-                    if(oldWeapon != null)
+                    if (oldWeapon != null)
                     {
                         oldWeapon.ShowWeapon(false);
                     }
@@ -330,48 +336,46 @@ namespace Unity.FPS.Gameplay
                     ActiveWeaponIndex = weaponSwitchNewIndex;
                     WeaponController newWeapon = GetActiveWeapon();
                     OnSwitchToWeapon?.Invoke(newWeapon);
-                    // newWeapon.ShowWeapon(true);
-
 
                     switchingTimeFactor = 0f;
-                    if(newWeapon != null)
+                    if (newWeapon != null)
                     {
                         weaponSwitchTimeStarted = Time.time;
-                        weaponSwitchState = WeaponSwitchState.PutUpNew;
+                        weaponSwithState = WeaponSwithState.PutUpNew;
                     }
                     else
                     {
-                        weaponSwitchState = WeaponSwitchState.Down;
+                        weaponSwithState = WeaponSwithState.Down;
                     }
                 }
-                else if(weaponSwitchState == WeaponSwitchState.PutUpNew)
+                else if (weaponSwithState == WeaponSwithState.PutUpNew)
                 {
-                    weaponSwitchState = WeaponSwitchState.Up;
+                    weaponSwithState = WeaponSwithState.Up;
                 }
             }
 
-            // ì§€ì—° ì‹œê°„ë™ì•ˆ ë¬´ê¸° êµì²´ ì—°ì¶œ
-            if(weaponSwitchState == WeaponSwitchState.PutDownPrvious)
+            //Áö¿¬½Ã°£µ¿¾È ¹«±âÀÇ À§Ä¡ ÀÌµ¿
+            if (weaponSwithState == WeaponSwithState.PutDownPrvious)
             {
                 weaponMainLocalPosition = Vector3.Lerp(defaultWeaponPostion.localPosition, downWeaponPostion.localPosition, switchingTimeFactor);
             }
-            else if (weaponSwitchState == WeaponSwitchState.PutUpNew)
+            else if (weaponSwithState == WeaponSwithState.PutUpNew)
             {
                 weaponMainLocalPosition = Vector3.Lerp(downWeaponPostion.localPosition, defaultWeaponPostion.localPosition, switchingTimeFactor);
             }
         }
 
-        // weaponSlotsì— ë¬´ê¸° í”„ë¦¬íŒ¹ìœ¼ë¡œ ìƒì„±í•œ WeaponController ì˜¤ë¸Œì íŠ¸ ì¶”ê°€
+        //weaponSlots¿¡ ¹«±â ÇÁ¸®ÆÕÀ¸·Î »ı¼ºÇÑ WeaponController ¿ÀºêÁ§Æ® Ãß°¡
         public bool AddWeapon(WeaponController weaponPrefab)
         {
-            // ì¶”ê°€í•˜ëŠ” ë¬´ê¸° ì†Œì§€ ì—¬ë¶€ ì œí¬ - ì¤‘ë³µ ê²€ì‚¬
-            if(HasWeapon(weaponPrefab) != null)
+            //Ãß°¡ÇÏ´Â ¹«±â ¼ÒÁö ¿©ºÎ Ã¼Å© - Áßº¹°Ë»ç
+            if (HasWeapon(weaponPrefab) != null)
             {
-                Debug.Log("Has Same weapon");
+                Debug.Log("Has Same Weapon");
                 return false;
             }
 
-            for(int i = 0; i < weaponSlots.Length; i++)
+            for (int i = 0; i < weaponSlots.Length; i++)
             {
                 if (weaponSlots[i] == null)
                 {
@@ -383,34 +387,34 @@ namespace Unity.FPS.Gameplay
                     weaponInstance.SourcePrefab = weaponPrefab.gameObject;
                     weaponInstance.ShowWeapon(false);
 
-                    //ë¬´ê¸° ì¥ì°©
+                    //¹«±âÀåÂø
                     OnAddedWeapon?.Invoke(weaponInstance, i);
 
                     weaponSlots[i] = weaponInstance;
-
                     return true;
                 }
             }
+
             Debug.Log("weaponSlots full");
             return false;
         }
 
-        //weaponSlotsì— ì¥ì°©ëœ ë¬´ê¸° ì œê±°
+        //weaponSlots¿¡ ÀåÂøµÈ ¹«±â Á¦°Å
         public bool RemoveWeapon(WeaponController oldWeapon)
         {
-            for(int i = 0; i < weaponSlots.Length; i++)
+            for (int i = 0;  i < weaponSlots.Length; i++)
             {
-                // ê°™ì€ ë¬´ê¸° ì°¾ê¸°
-                if(weaponSlots[i] == oldWeapon)
+                //°°Àº ¹«±â Ã£¾Æ¼­ Á¦°Å
+                if (weaponSlots[i] == oldWeapon)
                 {
-                    //ì œê±°
+                    //Á¦°Å
                     weaponSlots[i] = null;
 
                     OnRemoveWeapon?.Invoke(oldWeapon, i);
-                    
+
                     Destroy(oldWeapon.gameObject);
 
-                    //í˜„ì¬ ì œê±°í•œ ë¬´ê¸°ê°€ ì•¡í‹°ë¸Œë©´ ìƒˆë¡œìš´ ì•¡í‹°ë¸Œ ë¬´ê¸°ë¥¼ ì°¾ëŠ”ë‹¤ 
+                    //ÇöÀç Àç°ÅÇÑ ¹«±â°¡ ¾×Æ¼ºêÀÌ¸é »õ·Î¿î ¾×Æ¼ºê ¹«±â¸¦ Ã£´Â´Ù
                     if(i == ActiveWeaponIndex)
                     {
                         SwitchWeapon(true);
@@ -418,127 +422,114 @@ namespace Unity.FPS.Gameplay
                     return true;
                 }
             }
+
             return false;
         }
 
-        // ë§¤ê°œë³€ìˆ˜ë¡œ ë“¤ì–´ì˜¨ ë¬´ê¸°ì™€ ìŠ¬ë¡¯ì˜ ë¬´ê¸°ë¥¼ ë¹„êµí•˜ì—¬ ì¤‘ë³µë˜ì§€ ì•Šë„ë¡ í•˜ëŠ” í•¨ìˆ˜
+
+        //¸Å°³º¯¼ö·Î µé¾î¿Â ÇÁ¸®“nÀ¸·Î ¸¸µç ¹«±â°¡ ÀÖ´ÂÁö Ã¼Å©
         private WeaponController HasWeapon(WeaponController weaponPrefab)
         {
-            for(int i = 0; i < weaponSlots.Length; i++)
+            for (int i = 0; i < weaponSlots.Length; i++)
             {
                 if (weaponSlots[i] != null && weaponSlots[i].SourcePrefab == weaponPrefab)
                 {
                     return weaponSlots[i];
                 }
             }
+
             return null;
         }
 
-        // í˜„ì¬ í™œì„±í™”ëœ ë¬´ê¸°ë¥¼ êµ¬í•˜ëŠ” í•¨ìˆ˜
         public WeaponController GetActiveWeapon()
         {
             return GetWeaponAtSlotIndex(ActiveWeaponIndex);
         }
 
-        //ì§€ì •ëœ ìŠ¬ë¡¯ì— ë¬´ê¸°ê°€ ìˆëŠ”ì§€ ì—¬ë¶€
+        //ÁöÁ¤µÈ ½½·Ô¿¡ ¹«±â°¡ ÀÖ´ÂÁö ¿©ºÎ
         public WeaponController GetWeaponAtSlotIndex(int index)
         {
-            if(index >= 0 && index < weaponSlots.Length)
+            if (index >= 0 && index < weaponSlots.Length)
             {
                 return weaponSlots[index];
             }
+
             return null;
         }
 
-        // 0 ~ 9 - 0, 1, 2
-        // ë¬´ê¸° ë°”ê¾¸ê¸° - í˜„ì¬ ë“¤ê³  ìˆëŠ” ë¬´ê¸° false, ìƒˆë¡œìš´ ë¬´ê¸° true
+        //0~9  
+        //¹«±â ¹Ù²Ù±â, ÇöÀç µé°í ÀÖ´Â ¹«±â false, »õ·Î¿î ¹«±â true
         public void SwitchWeapon(bool ascendingOrder)
         {
-            int newWeaponIndex = -1;    // ìƒˆë¡œ ì•¡í‹°ë¸Œí•  ë¬´ê¸° ì¸ë±ìŠ¤
-            int closestSoltDistance = weaponSlots.Length;
-            for(int i = 0; i < weaponSlots.Length; i++)
+            int newWeaponIndex = -1;    //»õ·Î ¾×Æ¼ºêÇÒ ¹«±â ÀÎµ¦½º
+            int closestSlotDistance = weaponSlots.Length;
+            for (int i = 0; i < weaponSlots.Length; i++)
             {
-                if(i != ActiveWeaponIndex && GetWeaponAtSlotIndex(i) != null)
+                if (i != ActiveWeaponIndex && GetWeaponAtSlotIndex(i) != null)
                 {
                     int distanceToActiveIndex = GetDistanceBetweenWeaponSlot(ActiveWeaponIndex, i, ascendingOrder);
-                    if(distanceToActiveIndex < closestSoltDistance)
+                    if (distanceToActiveIndex < closestSlotDistance)
                     {
-                        closestSoltDistance = distanceToActiveIndex;
+                        closestSlotDistance = distanceToActiveIndex;
                         newWeaponIndex = i;
                     }
                 }
             }
 
-            // ìƒˆë¡œ ì•¡í‹°ë¸Œí•  ë¬´ê¸° ì¸ë±ìŠ¤ë¡œ ë¬´ê¸° êµì²´
+            //»õ·Î ¾×Æ¼ºêÇÒ ¹«±â ÀÎµ¦½º·Î ¹«±â ±³Ã¼
             SwitchToWeaponIndex(newWeaponIndex);
         }
 
-        // ìƒˆë¡œ ì•¡í‹°ë¸Œí•  ë¬´ê¸° ì¸ë±ìŠ¤ë¡œ ë¬´ê¸° êµì²´ í•¨ìˆ˜
         private void SwitchToWeaponIndex(int newWeaponIndex)
         {
-            //newWeaponIndex ê°’ ì²´í¬
-            if(newWeaponIndex >= 0 && newWeaponIndex != ActiveWeaponIndex)
+            //newWeaponIndex °ª Ã¼Å©
+            if (newWeaponIndex >= 0 && newWeaponIndex != ActiveWeaponIndex)
             {
                 weaponSwitchNewIndex = newWeaponIndex;
                 weaponSwitchTimeStarted = Time.time;
 
-                // í˜„ì¬ Activeí•œ ë¬´ê¸°ê°€ ìˆëŠ”ì§€ ì²´í¬
-                if(GetActiveWeapon() == null)
+                //ÇöÀç ¾×Æ¼ºêÇÑ ¹«±â°¡ ÀÖ´À³Ä?
+                if (GetActiveWeapon() == null)
                 {
                     weaponMainLocalPosition = downWeaponPostion.position;
-                    weaponSwitchState = WeaponSwitchState.PutUpNew;
+                    weaponSwithState = WeaponSwithState.PutUpNew;
                     ActiveWeaponIndex = newWeaponIndex;
 
                     WeaponController weaponController = GetWeaponAtSlotIndex(newWeaponIndex);
                     OnSwitchToWeapon?.Invoke(weaponController);
-                    // weaponController.ShowWeapon(true);
                 }
                 else
                 {
-                    weaponSwitchState = WeaponSwitchState.PutDownPrvious;
+                    weaponSwithState = WeaponSwithState.PutDownPrvious;
                 }
-
-                // =========================================================
-                // ì‚­ì œí•œ ì½”ë“œ
-                // if(ActiveWeaponIndex >= 0)
-                // {
-                //     WeaponController nowWeapon = GetWeaponAtSlotIndex(ActiveWeaponIndex);
-                //     nowWeapon.ShowWeapon(false);
-                // }
-
-                // WeaponController newWeapon = GetWeaponAtSlotIndex(newWeaponIndex);
-                // newWeapon.ShowWeapon(true);
-                // ActiveWeaponIndex = newWeaponIndex;
-                // =========================================================
-
             }
         }
 
-        // ìŠ¬ë¡¯ê°„ ê±°ë¦¬
+        //½½·Ô°£ °Å¸®
         private int GetDistanceBetweenWeaponSlot(int fromSlotIndex, int toSlotIndex, bool ascendingOrder)
         {
-            int distanceBetweenSlot = 0;
+            int distanceBetweenSlots = 0;
 
-            if(ascendingOrder)
+            if (ascendingOrder)
             {
-                distanceBetweenSlot = toSlotIndex - fromSlotIndex;
+                distanceBetweenSlots = toSlotIndex - fromSlotIndex;
             }
             else
             {
-                distanceBetweenSlot = fromSlotIndex - toSlotIndex;
+                distanceBetweenSlots = fromSlotIndex - toSlotIndex;
             }
 
-            if(distanceBetweenSlot < 0)
+            if (distanceBetweenSlots < 0)
             {
-                distanceBetweenSlot = distanceBetweenSlot + weaponSlots.Length;
+                distanceBetweenSlots = distanceBetweenSlots + weaponSlots.Length;
             }
 
-            return distanceBetweenSlot;
+            return distanceBetweenSlots;
         }
 
         void OnWeaponSwitched(WeaponController newWeapon)
         {
-            if(newWeapon != null)
+            if (newWeapon != null)
             {
                 newWeapon.ShowWeapon(true);
             }

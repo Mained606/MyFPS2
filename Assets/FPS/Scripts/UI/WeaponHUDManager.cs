@@ -1,43 +1,40 @@
+using UnityEngine;
 using Unity.FPS.Game;
 using Unity.FPS.Gameplay;
-using UnityEngine;
 
 namespace Unity.FPS.UI
 {
     public class WeaponHUDManager : MonoBehaviour
     {
         #region Variables
-        public RectTransform ammoPanel;
-        public GameObject ammoCountPrefab;
+        public RectTransform ammoPanel;             //ammoCountUI ºÎ¸ð ¿ÀºêÁ§Æ®
+        public GameObject ammoCountPrefab;          //ammoCountUI ÇÁ¸®ÆÕ
 
         private PlayerWeaponsManager playerWeaponsManager;
         #endregion
 
-        void Awake()
+        private void Awake()
         {
-            //ì°¸ì¡°
+            //ÂüÁ¶
             playerWeaponsManager = GameObject.FindObjectOfType<PlayerWeaponsManager>();
-            //
-
 
             playerWeaponsManager.OnAddedWeapon += AddWeapon;
             playerWeaponsManager.OnRemoveWeapon += RemoveWeapon;
             playerWeaponsManager.OnSwitchToWeapon += SwitchWeapon;
         }
 
-        // ë¬´ê¸° ì¶”ê°€í•˜ë©´ ammoUI í•˜ë‚˜ ì¶”ê°€
+        //¹«±âÃß°¡ ÇÏ¸é ammo UI ÇÏ³ª Ãß°¡
         void AddWeapon(WeaponController newWeapon, int weaponIndex)
         {
             GameObject ammoCountGo = Instantiate(ammoCountPrefab, ammoPanel);
-            AmmoCount amooCount = ammoCountGo.GetComponent<AmmoCount>();
-            amooCount.Initialzie(newWeapon, weaponIndex);
+            AmmoCount ammoCount = ammoCountGo.GetComponent<AmmoCount>();
+            ammoCount.Initialzie(newWeapon, weaponIndex);
         }
 
-        // ë¬´ê¸° ì œê±°í•˜ë©´ ammoUI í•˜ë‚˜ ì œê±°
-
+        //¹«±â Á¦°Å ÇÏ¸é ammo UI ÇÏ³ª Á¦°Å
         void RemoveWeapon(WeaponController oldWeapon, int weaponIndex)
         {
-            
+
         }
 
         //

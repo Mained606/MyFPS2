@@ -1,27 +1,26 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// ê²Œì„ì— ë“±ì¥í•˜ëŠ” Actorë“¤ì„ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
+    /// °ÔÀÓ¿¡ µîÀåÇÏ´Â ActorµéÀ» °ü¸®ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class ActorManager : MonoBehaviour
     {
         #region Variables
-        public List<Actor> Actors { get; private set; }
+        public List<Actor> Actors {  get; private set; }
 
-        public GameObject Player { get; private set; }
+        public GameObject Player {  get; private set; }
         #endregion
 
-        // í”Œë ˆì´ì–´ ì…‹íŒ…
+        //ÇÃ·¹ÀÌ¾î ¼ÂÆÃ
         public void SetPlayer(GameObject player) => Player = player;
 
         private void Awake()
         {
             Actors = new List<Actor>();
         }
-        
     }
 }

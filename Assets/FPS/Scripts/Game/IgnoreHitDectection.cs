@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// IgnoreHitDectection ì»´í¬ë„ŒíŠ¸ê°€ ë¶€ì°©ë˜ì–´ ìˆìœ¼ë©´ Hit íŒì • ë©´ì œ
+    /// IgnoreHitDectection ÄÄÆ÷³ÍÆ®°¡ ºÎÂøµÇ¾î ÀÖÀ¸¸é Hit ÆÇÁ¤ ¸éÁ¦
     /// </summary>
-    public class IgnoreHitDectection : MonoBehaviour {}
+    public class IgnoreHitDectection : MonoBehaviour { }
 }

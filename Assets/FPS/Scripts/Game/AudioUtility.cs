@@ -3,29 +3,27 @@ using UnityEngine;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// ì˜¤ë””ì˜¤ ê´€ë ¨ í•¨ìˆ˜
-    /// </summary>    
+    /// ¿Àµğ¿À ÇÃ·¹ÀÌ °ü·Ã ±â´É ±¸Çö
+    /// </summary>
     public class AudioUtility : MonoBehaviour
-    {   
-        //ì§€ì •ëœ ìœ„ì¹˜ì— ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„±í•˜ê³  AudioSource ì»´í¬ë„ŒíŠ¸ë¥¼ ì¶”ê°€í•´ì„œ ì§€ì •ëœ í´ë¦½ì„ í”Œë ˆì´í•œë‹¤.
-        //í´ë¦½ ì‚¬ìš´ë“œ í”Œë ˆì´ê°€ ëë‚˜ë©´ ìë™ìœ¼ë¡œ í‚¬í•œë‹¤ - TimeSelfDestruct ì»´í¬ë„ŒíŠ¸ ì´ìš©
+    {
+        //ÁöÁ¤µÈ À§Ä¡¿¡ °ÔÀÓ¿ÀºêÁ§Æ® »ı¼ºÇÏ°í AudioSource ÄÄÆ÷³ÍÆ®¸¦ Ãß°¡ÇØ¼­ ÁöÁ¤µÈ Å¬¸³À» ÇÃ·¹ÀÌÇÑ´Ù
+        //Å¬¸³ »ç¿îµå ÇÃ·¹ÀÌ°¡ ³¡³ª¸é ÀÚµ¿À¸·Î Å³ÇÑ´Ù - TimeSelfDestruct ÄÄÆ÷³ÍÆ® ÀÌ¿ë
         public static void CreateSfx(AudioClip clip, Vector3 position, float spartialBlend, float rolloffDistanceMin = 1f)
         {
             GameObject impactSfxInstance = new GameObject();
             impactSfxInstance.transform.position = position;
 
-            // audio clip play
+            //audio clip play
             AudioSource source = impactSfxInstance.AddComponent<AudioSource>();
             source.clip = clip;
             source.spatialBlend = spartialBlend;
             source.minDistance = rolloffDistanceMin;
-
             source.Play();
 
-            // ì˜¤ë¸Œì íŠ¸ kill
-            TimeSelfDesturct timeSelfDesturct = impactSfxInstance.AddComponent<TimeSelfDesturct>();
-            timeSelfDesturct.lifeTime = clip.length;
-
+            //¿ÀºêÁ§Æ® kill
+            TimeSelfDestruct timeSelfDestruct = impactSfxInstance.AddComponent<TimeSelfDestruct>();
+            timeSelfDestruct.lifeTime = clip.length;
         }
     }
 }

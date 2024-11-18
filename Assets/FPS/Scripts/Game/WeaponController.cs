@@ -1,13 +1,9 @@
-using System;
-using System.Runtime.CompilerServices;
-using Unity.FPS.Gameplay;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// í¬ë¡œìŠ¤ í—¤ì–´ ë°ì´í„°
+    /// Å©·Î½ºÇì¾î¸¦ ±×¸®±â À§ÇÑ µ¥ÀÌÅÍ
     /// </summary>
     [System.Serializable]
     public struct CrossHairData
@@ -18,159 +14,157 @@ namespace Unity.FPS.Game
     }
 
     /// <summary>
-    /// ë¬´ê¸° ìŠ› íƒ€ì…
+    /// ¹«±â ½¸ Å¸ÀÔ
     /// </summary>
     public enum WeaponShootType
     {
         Manual,
         Automatic,
         Charge,
-        Sniper
+        Sniper,
     }
 
     /// <summary>
-    /// ë¬´ê¸°(ì´ê¸°)ë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
+    /// ¹«±â(ÃÑ±â)¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class WeaponController : MonoBehaviour
-    {   
+    {
         #region Variables
-        // ë¬´ê¸° í™œì„±í™”, ë¹„í™œì„±í™”
+        //¹«±â È°¼ºÈ­, ºñÈ°¼ºÈ­
         public GameObject weaponRoot;
 
-        public GameObject Owner { get; set; }               // ë¬´ê¸°ì˜ ì£¼ì¸
-        public GameObject SourcePrefab { get; set; }        // ë¬´ê¸°ë¥¼ ìƒì„±í•œ ì˜¤ë¦¬ì§€ë„ í”„ë¦¬íŒ¹
-        public bool IsWeaponActive { get; private set; }    // ë¬´ê¸° í™œì„±í™” ìƒíƒœ ì—¬ë¶€
+        public GameObject Owner { get; set; }           //¹«±âÀÇ ÁÖÀÎ
+        public GameObject SourcePrefab { get; set; }    //¹«±â¸¦ »ı¼ºÇÑ ¿À¸®Áö³Î ÇÁ¸®ÆÕ
+        public bool IsWeaponActive { get; private set; }    //¹«±â È°¼ºÈ­ ¿©ºÎ
 
         private AudioSource shootAudioSource;
         public AudioClip switchWeaponSfx;
 
-        //shooting
+        //Shooting
         public WeaponShootType shootType;
 
-        [SerializeField] private float maxAmmo = 8f;    // ì¥ì „í•  ìˆ˜ ìˆëŠ” ìµœëŒ€ ì´ì•Œ ê°¯ìˆ˜
-        private float currentAmmo;                         // í˜„ì¬ ì´ì•Œ ê°¯ìˆ˜
+        [SerializeField] private float maxAmmo = 8f;            //ÀåÀüÇÒ¼ö ÀÖ´Â ÃÖ´ë ÃÑ¾Ë °¹¼ö
+        private float currentAmmo;
 
-        [SerializeField] private float delayBetweenShots = 0.5f; // ì´ì•Œ ë°œì‚¬ ê°„ê²©
-        private float lastTimeShot;       // ë§ˆì§€ë§‰ ì´ì•Œ ë°œì‚¬ ì‹œê°„
+        [SerializeField] private float delayBetweenShots = 0.5f;    //½¸ °£°İ
+        private float lastTimeShot;                                 //¸¶Áö¸·À¸·Î ½¸ÇÑ ½Ã°£
 
-        // Vfx, Sfx
-        public Transform weaponMuzzle;
-        public GameObject muzzleFlashPrefab;
-        public AudioClip shootSfx;
+        //Vfx, Sfx
+        public Transform weaponMuzzle;                              //ÃÑ±¸ À§Ä¡
+        public GameObject muzzleFlashPrefab;                        //ÃÑ±¸ ¹ß»ç ÀÌÆÑÆ® È¿°ú
+        public AudioClip shootSfx;                                  //ÃÑ ¹ß»ç »ç¿îµå
 
         //CrossHair
-        public CrossHairData crossHairDefault;              // ê¸°ë³¸, í‰ìƒì‹œ
-        public CrossHairData crossHairTargetInSight;        // ì ì„ í¬ì°©í–ˆì„ ë•Œ, íƒ€ê²ŸíŒ…
+        public CrossHairData crosshairDefault;              //±âº», Æò»ó½Ã
+        public CrossHairData crosshairTargetInSight;        //ÀûÀ» Æ÷ÂøÇßÀ»¶§, Å¸°ÙÆÃ µÇ¾úÀ»¶§
 
-        // ì¡°ì¤€
-        public float aimZoomRatio = 1f;                     // ì¡°ì¤€ì‹œ ì¤Œì¸ ì„¤ì •ê°’
-        public Vector3 aimPositionOffset;                   // ì¡°ì¤€ì‹œ ìœ„ì¹˜ ì˜¤í”„ì…‹
+        //Á¶ÁØ
+        public float aimZoomRatio = 1f;             //Á¶ÁØ½Ã ÁÜÀÎ ¼³Á¤°ª
+        public Vector3 aimOffset;                   //Á¶ÁØ½Ã ¹«±â À§Ä¡ Á¶Á¤°ª
 
-        // ë°˜ë™
+        //¹İµ¿
         public float recoilForce = 0.5f;
 
         //Projectile
         public ProjectileBase projectilePrefab;
-        public Vector3 MuzzleWorldVelocity { get; private set; }        // í˜„ì¬ í”„ë ˆì„ì—ì„œì˜ êµ¬ë™ ì†ë„
+
+        public Vector3 MuzzleWorldVelocity { get; private set; }            //ÇöÀç ÇÁ·¹ÀÓ¿¡¼­ÀÇ ÃÑ±¸ ¼Óµµ
         private Vector3 lastMuzzlePosition;
+        
+        [SerializeField] private int bulletsPerShot = 1;                     //ÇÑ¹ø ½¸ÇÏ´Âµ¥ ¹ß»çµÇ´Â ÅºÈ¯ÀÇ °¹¼ö
+        [SerializeField] private float bulletSpreadAngle = 0f;               //ºæ·¿ÀÌ ÆÛÁ® ³ª°¡´Â °¢µµ
 
-
-        [SerializeField] private int bulletsPerShot = 1; // í•œ ë²ˆ ìŠ›í•˜ëŠ” ë° ë°œì‚¬ë˜ëŠ” íƒ„í™˜ ìˆ˜
-        [SerializeField] private float bulletSpreadAngle = 0f;   //ë¶ˆë ›ì´ í¼ì €ë‚˜ê°€ëŠ” ê°ë„
-
-        //Charge : ë°œì‚¬ ë²„íŠ¼ì„ ëˆ„ë¥´ê³  ìˆìœ¼ë©´ ë°œì‚¬ì²´ì˜ ë°ë¯¸ì§€, ì†ë„ê°€ ì¼ì •ê°’ê¹Œì§€ ì»¤ì§„ë‹¤.
-        public float CurrentCharge { get; private set; }            // ê°’ì´ 0 ~ 1
+        //Charge : ¹ß»ç ¹öÆ°À» ´©¸£°í ÀÖÀ¸¸é ¹ß»çÃ¼ÀÇ µ¥¹ÌÁö, ¼Óµµ°¡ ÀÏÁ¤°ª±îÁö Ä¿Áø´Ù
+        public float CurrentCharge { get; private set; }            //0 ~ 1
         public bool IsCharging { get; private set; }
 
-        [SerializeField] private float ammoUseOnStartCharge = 1f;    // ì¶©ì „ ì‹œì‘ ë²„íŠ¼ì„ ëˆ„ë¥´ê¸° ìœ„í•´ í•„ìš”í•œ ìµœì†Œ ammoëŸ‰
-        [SerializeField] private float ammoUsageRateWhileCharging = 1f;  //ì°¨ì§€í•˜ê³  ìˆëŠ” ë™ì•ˆ ì†Œë¹„ë˜ëŠ” ammoëŸ‰
-        private float maxChargeDuration = 2f;       //ì¶©ì „ ì‹œê°„ MAX
+        [SerializeField] private float ammoUseOnStartCharge = 1f; //ÃæÀü ½ÃÀÛ ¹öÆ°À» ´©¸£±â À§ÇØ ÇÊ¿äÇÑ ammo·®
+        [SerializeField] private float ammoUsageRateWhileCharging = 1f; //ÃæÀüÇÏ°í ÀÖ´Âµ¿¾È ¼ÒºñµÇ´Â ammo·®
+        private float maxChargeDuration = 2f;                           //ÃæÀü ½Ã°£ Max
 
-        public float lastChargeTriggerTimestamp;    // ì¶©ì „ ì‹œì‘ ì‹œê°„
+        public float lastChargeTriggerTimeStamp;                        //ÃæÀü ½ÃÀÛ ½Ã°£
 
-        // Reload: ì¬ì¥ì „
-        [SerializeField] private float ammoReloadRate = 1f;     // ì´ˆë‹¹ ì¬ì¥ì „ë˜ëŠ” ëŸ‰
-        [SerializeField] private float ammoReloadDelay = 2f;    // ìŠ›í•œ ë‹¤ìŒ ammoReloadDelayê°€ ì§€ë‚œí›„ì— ì¬ì¥ì „ ê°€ëŠ¥
+        //Reload: ÀçÀåÀü
+        [SerializeField] private float ammoReloadRate = 1f;             //ÃÊ´ç ÀçÀåÀüµÇ´Â ·®
+        [SerializeField] private float ammoReloadDelay = 2f;            //½¸ÇÑ ´ÙÀ½ ammoReloadDelay°¡ Áö³­ÈÄ¿¡ ÀçÀåÀü °¡´É
 
-        [SerializeField] private bool automaticReload = true;   //ìë™, ìˆ˜ë™ êµ¬ë¶„
+        [SerializeField] private bool automaticReload = true;   //ÀÚµ¿, ¼öµ¿ ±¸ºĞ
         #endregion
 
         public float CurrentAmmoRatio => currentAmmo / maxAmmo;
 
-        void Awake()
+        private void Awake()
         {
-            //ì°¸ì¡°
+            //ÂüÁ¶
             shootAudioSource = this.GetComponent<AudioSource>();
         }
 
-        void Start()
+        private void Start()
         {
-            // ì´ˆê¸°í™”
+            //ÃÊ±âÈ­
             currentAmmo = maxAmmo;
             lastTimeShot = Time.time;
             lastMuzzlePosition = weaponMuzzle.position;
         }
 
-        void Update()
-        {
-            UpdateCharge(); // ì¶©ì „
+        private void Update()
+        {            
+            UpdateCharge();     //ÃæÀü
             UpdateAmmo();
 
             //MuzzleWorldVelocity
-            if(Time.deltaTime > 0)
+            if (Time.deltaTime > 0f)
             {
                 MuzzleWorldVelocity = (weaponMuzzle.position - lastMuzzlePosition) / Time.deltaTime;
-
                 lastMuzzlePosition = weaponMuzzle.position;
             }
-
         }
 
-        // Reload - Auto
+        //Reload - Auto
         private void UpdateAmmo()
         {
-            // ì¬ì¥ì „
-            if(automaticReload && currentAmmo < maxAmmo && IsCharging == false && lastTimeShot + ammoReloadDelay < Time.time)
+            //ÀçÀåÀü
+            if(automaticReload && currentAmmo < maxAmmo && IsCharging == false
+               && lastTimeShot + ammoReloadDelay < Time.time )
             {
-                currentAmmo += ammoReloadRate * Time.deltaTime; // ì´ˆë‹¹ ammoReloadRateëŸ‰ ì¬ì¥ì „
+                currentAmmo += ammoReloadRate * Time.deltaTime; //ÃÊ´ç ammoReloadRate·® ÀçÀåÀü
                 currentAmmo = Mathf.Clamp(currentAmmo, 0, maxAmmo);
             }
         }
 
-
-        // Reload - ìˆ˜ë™
+        //Reload - ¼öµ¿
         public void Reload()
         {
             if(automaticReload || currentAmmo >= maxAmmo || IsCharging)
             {
                 return;
             }
+
             currentAmmo = maxAmmo;
         }
 
-
-        // ì¶©ì „
-        private void UpdateCharge()
+        //ÃæÀü
+        void UpdateCharge()
         {
             if(IsCharging)
             {
                 if(CurrentCharge < 1f)
                 {
-                    // í˜„ì¬ ë‚¨ì•„ìˆëŠ” ì¶©ì „ëŸ‰
+                    //ÇöÀç ³²¾ÆÀÖ´Â ÃæÀü·®
                     float chargeLeft = 1f - CurrentCharge;
-                    
-                    float chargeAdd = 0f;       // ì´ë²ˆ í”„ë ˆì„ì— ì¶©ì „í•  ëŸ‰
+
+                    float chargeAdd = 0f;           //ÀÌ¹ø ÇÁ·¹ÀÓ¿¡ ÃæÀüÇÒ ·®
                     if(maxChargeDuration <= 0f)
                     {
-                        chargeAdd = chargeLeft; // í•œ ë²ˆì— í’€ ì¶©ì „
+                        chargeAdd = chargeLeft;     //ÇÑ¹ø¿¡ Ç® ÃæÀü
                     }
                     else
                     {
                         chargeAdd = (1f / maxChargeDuration) * Time.deltaTime;
                     }
-                    chargeAdd = Mathf.Clamp(chargeAdd, 0f, chargeLeft);     // ë‚¨ì•„ìˆëŠ” ì¶©ì „ëŸ‰ë³´ë‹¤ ì‘ì•„ì•¼ í•œë‹¤.
+                    chargeAdd = Mathf.Clamp(chargeAdd, 0f, chargeLeft);         //³²¾ÆÀÖ´Â ÃæÀü·®º¸´Ù ÀÛ¾Æ¾ß ÇÑ´Ù
 
-                    //chargeAdd ë§Œí¼ Ammo ì†Œë¹„ëŸ‰ì„ êµ¬í•œë‹¤.
+                    //chargeAdd ¸¸Å­ Ammo ¼Òºñ·®À» ±¸ÇÑ´Ù
                     float ammoThisChargeRequire = chargeAdd * ammoUsageRateWhileCharging;
                     if(ammoThisChargeRequire <= currentAmmo)
                     {
@@ -181,22 +175,22 @@ namespace Unity.FPS.Game
             }
         }
 
-        // ë¬´ê¸° í™œì„±í™”, ë¹„í™œì„±í™”
+        //¹«±â È°¼ºÈ­, ºñÈ°¼ºÈ­
         public void ShowWeapon(bool show)
         {
             weaponRoot.SetActive(show);
 
-            // this ë¬´ê¸°ë¡œ ë³€ê²½
-            if(show == true && switchWeaponSfx != null)
+            //this ¹«±â·Î º¯°æ
+            if (show == true && switchWeaponSfx != null)
             {
-                // ë¬´ê¸° ë³€ê²½ íš¨ê³¼ìŒ í”Œë ˆì´
+                //¹«±â º¯°æ È¿°úÀ½ ÇÃ·¹ÀÌ
                 shootAudioSource.PlayOneShot(switchWeaponSfx);
             }
 
             IsWeaponActive = show;
         }
 
-        // í‚¤ ì…ë ¥ì— ë”°ë¥¸ ìŠ› êµ¬í˜„
+        //Å° ÀÔ·Â¿¡ µû¸¥ ½¸ Å¸ÀÔ ±¸Çö
         public bool HandleShootInputs(bool inputDown, bool inputHeld, bool inputUp)
         {
             switch(shootType)
@@ -216,19 +210,17 @@ namespace Unity.FPS.Game
                 case WeaponShootType.Charge:
                     if(inputHeld)
                     {
-                        // ì¶©ì „ ì‹œì‘
+                        //ÃæÀü ½ÃÀÛ
                         TryBeginCharge();
                     }
-
                     if(inputUp)
                     {
-                        // ì¶©ì „ ë ë°œì‚¬
+                        //ÃæÀü ³¡ ¹ß»ç
                         return TryReleaseCharge();
                     }
                     break;
-
                 case WeaponShootType.Sniper:
-                    if(inputDown)
+                    if (inputDown)
                     {
                         return TryShoot();
                     }
@@ -238,29 +230,28 @@ namespace Unity.FPS.Game
             return false;
         }
 
-        // ì¶©ì „ ì‹œì‘
+        //ÃæÀü ½ÃÀÛ
         void TryBeginCharge()
         {
-            if(!IsCharging && currentAmmo >= ammoUseOnStartCharge 
+            if(IsCharging == false && currentAmmo >= ammoUseOnStartCharge
                 && (lastTimeShot + delayBetweenShots) < Time.time)
             {
                 UseAmmo(ammoUseOnStartCharge);
 
-                lastChargeTriggerTimestamp = Time.time;
+                lastChargeTriggerTimeStamp = Time.time;
                 IsCharging = true;
-
             }
         }
 
-        // ë°œì‚¬
+        //ÃæÀü ³¡ - ¹ß»ç
         bool TryReleaseCharge()
         {
             if(IsCharging)
             {
-                // ìŠ›
+                //½¸
                 HandleShoot();
 
-                // ì´ˆê¸°í™”
+                //ÃÊ±âÈ­
                 CurrentCharge = 0f;
                 IsCharging = false;
                 return true;
@@ -275,12 +266,11 @@ namespace Unity.FPS.Game
             lastTimeShot = Time.time;
         }
 
-        private bool TryShoot()
+        bool TryShoot()
         {
-            if(lastTimeShot + delayBetweenShots < Time.time && currentAmmo >= 1f)
+            if(currentAmmo >= 1f && (lastTimeShot + delayBetweenShots) < Time.time)
             {
                 currentAmmo -= 1f;
-                Debug.Log(currentAmmo);
 
                 HandleShoot();
                 return true;
@@ -289,19 +279,17 @@ namespace Unity.FPS.Game
             return false;
         }
 
-        // ìŠ› ì—°ì¶œ
+        //½¸ ¿¬Ãâ
         void HandleShoot()
         {
-
-            //project tile ìƒì„±
-            for(int i = 0; i < bulletsPerShot; i++)
+            //projectile »ı¼º
+            for (int i = 0; i < bulletsPerShot; i++)
             {
                 Vector3 shotDirection = GetShotDirectionWithinSpread(weaponMuzzle);
-                
                 ProjectileBase projectileInstance = Instantiate(projectilePrefab, weaponMuzzle.position, Quaternion.LookRotation(shotDirection));
                 projectileInstance.Shoot(this);
-                
             }
+
             //Vfx
             if(muzzleFlashPrefab)
             {
@@ -315,13 +303,16 @@ namespace Unity.FPS.Game
                 shootAudioSource.PlayOneShot(shootSfx);
             }
 
+            //½¸ÇÑ ½Ã°£ ÀúÀå
             lastTimeShot = Time.time;
         }
-        //project tile ë°©í–¥
-        Vector3 GetShotDirectionWithinSpread(Transform shootTransform)
+
+        //projectile ³¯¾Æ°¡´Â ¹æÇâ
+        Vector3 GetShotDirectionWithinSpread(Transform shootTransfrom)
         {
-            float spreadAngleRatio = bulletSpreadAngle / 180f; 
-            return Vector3.Lerp(shootTransform.forward, UnityEngine.Random.insideUnitSphere, spreadAngleRatio);
+            float spreadAngleRatio = bulletSpreadAngle / 180f;
+            return Vector3.Lerp(shootTransfrom.forward, UnityEngine.Random.insideUnitSphere, spreadAngleRatio);
         }
+
     }
 }

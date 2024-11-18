@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// ì£½ì—ˆì„ ë•Œ Healthë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ë¥¼ í‚¬í•˜ëŠ” í´ë˜ìŠ¤
+    /// Á×¾úÀ»¶§ Health¸¦ °¡Áø ¿ÀºêÁ§Æ®¸¦ Å³ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class Destructable : MonoBehaviour
     {
@@ -11,24 +11,25 @@ namespace Unity.FPS.Game
         private Health health;
         #endregion
 
-        void Start()
+        private void Start()
         {
+            //ÂüÁ¶
             health = GetComponent<Health>();
             DebugUtility.HandleErrorIfNullGetComponent<Health, Destructable>(health, this, gameObject);
 
-            // UnityAction í•¨ìˆ˜ ë“±ë¡
-            health.OnDie += OnDie;
+            //UnityAction ÇÔ¼ö µî·Ï
             health.OnDamaged += OnDamaged;
+            health.OnDie += OnDie;
         }
 
         void OnDamaged(float damage, GameObject damageSource)
         {
-            //ToDo: ë°ë¯¸ì§€ íš¨ê³¼ êµ¬í˜„ 
+            //TODO : µ¥¹ÌÁö È¿°ú ±¸Çö
         }
 
-        // ì£½ì—ˆì„ ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
         void OnDie()
         {
+            //Å³
             Destroy(gameObject);
         }
     }

@@ -4,22 +4,23 @@ using UnityEngine.Events;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// 발사체의 기본이 되는 부모 클래스
+    /// �߻�ü�� �⺻�� �Ǵ� �θ� Ŭ����
     /// </summary>
     public abstract class ProjectileBase : MonoBehaviour
     {
         #region Variables
-        public GameObject Owner { get; private set; } // 발사한 주체
-        public Vector3 InitialPosition { get; private set; } // 발사체의 초기 위치
-        public Vector3 InitialDirection { get; private set; } // 발사체의 초기 방향값
-        public Vector3 InheritedMuzzleVelocity { get; private set; } // 발사체에 상속된 총구 속도
-        public float InitialCharge { get; private set; } // 발사체의 초기 충전량
+        public GameObject Owner { get; private set; }   //�߻��� ��ü
+        public Vector3 InitialPosition { get; private set; }
+        public Vector3 InitialDirection { get; private set; }
+        public Vector3 InheritedMuzzleVelocity { get; private set; }
+        public float InitialCharge { get; private set; }
 
-        public UnityAction OnShoot; // 발사 이벤트
+        public UnityAction OnShoot;                     //�߻�� ��ϵ� �Լ� ȣ��
         #endregion
 
         public void Shoot(WeaponController controller)
         {
+            //�ʱ�ȭ
             Owner = controller.Owner;
             InitialPosition = this.transform.position;
             InitialDirection = this.transform.forward;
@@ -29,5 +30,4 @@ namespace Unity.FPS.Game
             OnShoot?.Invoke();
         }
     }
-
 }

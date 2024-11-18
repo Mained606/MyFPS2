@@ -108,7 +108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2225486910712267856}
   - component: {fileID: 8090847488450120274}
-  - component: {fileID: 7141456304116015201}
+  - component: {fileID: 8345850323311972832}
   m_Layer: 6
   m_Name: Weapon_Shotgun
   m_TagString: Untagged
@@ -230,7 +230,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &7141456304116015201
+--- !u!114 &8345850323311972832
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -239,36 +239,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 2225486910712267859}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8210ca6765ccb64e99f985f7c8ebdf0, type: 3}
+  m_Script: {fileID: 11500000, guid: 78260434ba86ecb42a417fdcb2373d8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponRoot: {fileID: 1505447205160222267}
-  switchWeaponSfx: {fileID: 8300000, guid: 70dcbe7592dd1c748b41e27c91a48302, type: 3}
+  switchWeaponSfx: {fileID: 8300000, guid: 2150c7cdca78a7f4e8f0f4a7a70e1d86, type: 3}
   shootType: 0
   maxAmmo: 2
-  delayBetweenShots: 0.5
+  delayBetweenShots: 1
   weaponMuzzle: {fileID: 8334323006752503713}
   muzzleFlashPrefab: {fileID: 748781637555137343, guid: 4f5d4e5eaa0e5104791549cea3dc3f23,
     type: 3}
-  shootSfx: {fileID: 8300000, guid: 8e22a6f096cfdf7418c53b019c7171e0, type: 3}
-  crossHairDefault:
-    CrossHairSprite: {fileID: 21300000, guid: 1b18da7c257c55f408858efd716847d0, type: 3}
+  shootSfx: {fileID: 8300000, guid: dfbaec87f1798684ea15da4db161e1ae, type: 3}
+  crosshairDefault:
+    CrossHairSprite: {fileID: 21300000, guid: a8598982313764348be094114815eb05, type: 3}
     CrossHairSize: 40
-    CrossHairColor: {r: 0, g: 1, b: 0.8627451, a: 1}
-  crossHairTargetInSight:
-    CrossHairSprite: {fileID: 21300000, guid: 1b18da7c257c55f408858efd716847d0, type: 3}
+    CrossHairColor: {r: 0, g: 1, b: 0.85924864, a: 1}
+  crosshairTargetInSight:
+    CrossHairSprite: {fileID: 21300000, guid: a8598982313764348be094114815eb05, type: 3}
     CrossHairSize: 30
-    CrossHairColor: {r: 0, g: 0.42681122, b: 1, a: 1}
+    CrossHairColor: {r: 0, g: 0.77265453, b: 1, a: 1}
   aimZoomRatio: 0.7
-  aimPositionOffset: {x: 0, y: 0.13, z: 0}
+  aimOffset: {x: 0, y: 0.13, z: 0}
   recoilForce: 0.5
-  projectilePrefab: {fileID: 1099788227586793320, guid: f05c7e6fbbfbe824388456bb4abff9d4,
+  projectilePrefab: {fileID: 4805732695468578066, guid: f05c7e6fbbfbe824388456bb4abff9d4,
     type: 3}
   bulletsPerShot: 24
   bulletSpreadAngle: 10
   ammoUseOnStartCharge: 1
   ammoUsageRateWhileCharging: 1
-  lastChargeTriggerTimestamp: 0
+  lastChargeTriggerTimeStamp: 0
   ammoReloadRate: 0.2
   ammoReloadDelay: 2
   automaticReload: 1
