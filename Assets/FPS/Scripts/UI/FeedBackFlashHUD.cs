@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 namespace Unity.FPS.UI
 {
+    /// <summary>
+    /// µ¥¹ÌÁö, Èú ÇÃ·¹½Ã È¿°ú ±¸Çö
+    /// </summary>
     public class FeedBackFlashHUD : MonoBehaviour
     {
         #region Variables
@@ -15,8 +18,8 @@ namespace Unity.FPS.UI
         public Image flashImage;
         public CanvasGroup flashCanvasGroup;
 
-        public Color DamageFlashColor;
-        public Color HealFlashColor;
+        public Color damageFlashColor;
+        public Color healFlashColor;
 
         [SerializeField] private float flashDuration = 1f;
         [SerializeField] private float flashMaxAlpha = 1f;
@@ -27,18 +30,18 @@ namespace Unity.FPS.UI
 
         private void Start()
         {
-            PlayerCharacterController playerCharacterController 
+            //ÂüÁ¶
+            PlayerCharacterController playerCharacterController
                 = GameObject.FindObjectOfType<PlayerCharacterController>();
 
             playerHealth = playerCharacterController.GetComponent<Health>();
             playerHealth.OnDamaged += OnDamaged;
             playerHealth.OnHeal += OnHeal;
-
         }
 
         private void Update()
         {
-            if(flashActive)
+            if (flashActive)
             {
                 float normalizedTimeSinceDamage = (Time.time - lastTimeFlashStarted) / flashDuration;
                 if(normalizedTimeSinceDamage < 1f)
@@ -54,26 +57,27 @@ namespace Unity.FPS.UI
             }
         }
 
-        void ResetFlash()
+        //È¿°ú ÃÊ±âÈ­
+        private void ResetFlash()
         {
             flashActive = true;
-            lastTimeFlashStarted = Time.time;
+            lastTimeFlashStarted = Time.time;   //È¿°ú ½ÃÀÛ ½Ã°£
             flashCanvasGroup.alpha = 0f;
             flashCanvasGroup.gameObject.SetActive(true);
-            
         }
 
+        //µ¥¹ÌÁö ÀÔÀ»¶§ µ¥¹ÌÁö ÇÃ·¹½Ã ½ÃÀÛ
         private void OnDamaged(float damage, GameObject damageSource)
         {
             ResetFlash();
-            flashImage.color = DamageFlashColor;
+            flashImage.color = damageFlashColor;
         }
 
-        //íž í• ë•Œ íž í”Œëž˜ì‹œ ì‹œìž‘
+        //ÈúÇÒ¶§ Èú ÇÃ·¹½Ã ½ÃÀÛ
         private void OnHeal(float amount)
         {
             ResetFlash();
-            flashImage.color = HealFlashColor;
+            flashImage.color = healFlashColor;
         }
 
     }

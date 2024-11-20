@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Unity.FPS.AI
 {
     /// <summary>
-    /// Enemy ????  
+    /// Enemy 상태  
     /// </summary>
     public enum AIState
     {
@@ -14,7 +14,7 @@ namespace Unity.FPS.AI
     }
 
     /// <summary>
-    /// ?????? Enemy?? ??????? ??????? ?????
+    /// 이동하는 Enemy의 상태들을 구현하는 클래스
     /// </summary>
     public class EnemyMobile : MonoBehaviour
     {
@@ -24,13 +24,13 @@ namespace Unity.FPS.AI
 
         public AIState AiState { get; private set; }
 
-        //???
+        //이동
         public AudioClip movementSound;
         public MinMaxFloat pitchMovenemtSpeed;
 
         private AudioSource audioSource;
 
-        //?????? - ?????
+        //데미지 - 이펙트
         public ParticleSystem[] randomHitSparks;
 
         //Detected
@@ -51,41 +51,34 @@ namespace Unity.FPS.AI
 
         private void Start()
         {
-            //????            
+            //참조            
             enemyController = GetComponent<EnemyController>();
             enemyController.Damaged += OnDamaged;
             enemyController.OnDetectedTarget += OnDetected;
             enemyController.OnLostTarget += OnLost;
-            enemyController.OnAttack += OnAttacked;
+            enemyController.OnAcctack += Attacked;
 
             audioSource = GetComponent<AudioSource>();
             audioSource.clip = movementSound;
             audioSource.Play();
 
-            //????
+            //초기화
             AiState = AIState.Patrol;
         }
 
-        private void OnAttacked()
-        {
-            //애니
-            animator.SetTrigger(k_AnimAttackParameter);
-        }
-
-
         private void Update()
         {
-            //???? ????/????
+            //상태 변경/구현
             UpdateAiStateTransition();
             UpdateCurrentAiState();
 
-            //????? ???? ???/???? ???
+            //속도에 따른 애니/사운드 효과
             float moveSpeed = enemyController.Agent.velocity.magnitude;
-            animator.SetFloat(k_AnimMoveSpeedParameter, moveSpeed);         //???
+            animator.SetFloat(k_AnimMoveSpeedParameter, moveSpeed);         //애니
             audioSource.pitch = pitchMovenemtSpeed.GetValueFromRatio(moveSpeed/enemyController.Agent.speed);
         }
 
-        //???¿? ???? Enemy ????
+        //상태에 따른 Enemy 구현
         private void UpdateCurrentAiState()
         {
             switch(AiState)
@@ -103,14 +96,13 @@ namespace Unity.FPS.AI
                     //일정거리까지는 이동하면서 공격
                     float distance = Vector3.Distance(enemyController.KnonwDetectedTarget.transform.position,
                         enemyController.DetectionModule.detectionSourcePoint.position);
-                    
-                    if(distance >= enemyController.DetectionModule.attackRange * attackSkipDistanceRatio)
+                    if (distance >= enemyController.DetectionModule.attackRange * attackSkipDistanceRatio)
                     {
                         enemyController.SetNavDestination(enemyController.KnonwDetectedTarget.transform.position);
                     }
                     else
                     {
-                        enemyController.SetNavDestination(transform.position); // 제자리에 서기
+                        enemyController.SetNavDestination(transform.position);  //제자리에 서기
                     }
 
                     enemyController.OrientToward(enemyController.KnonwDetectedTarget.transform.position);
@@ -120,7 +112,7 @@ namespace Unity.FPS.AI
             }
         }
 
-        //???? ???濡 ???? ????
+        //상태 변경에 따른 구현
         private void UpdateAiStateTransition()
         {
             switch (AiState)
@@ -131,7 +123,7 @@ namespace Unity.FPS.AI
                     if(enemyController.IsSeeingTarget && enemyController.IsTargetInAttackRange)
                     {
                         AiState = AIState.Attack;
-                        enemyController.SetNavDestination(transform.position);  //????
+                        enemyController.SetNavDestination(transform.position);  //정지
                     }
                     break;
                 case AIState.Attack:
@@ -145,20 +137,20 @@ namespace Unity.FPS.AI
 
         private void OnDamaged()
         {
-            //????? ???? - ??????? ??? ??????? ?÷???
+            //스파크 파티클 - 랜덤하게 하나 선택해서 플레이
             if(randomHitSparks.Length > 0)
             {
                 int randNum = Random.Range(0, randomHitSparks.Length);
                 randomHitSparks[randNum].Play();
             }
 
-            //?????? ???
+            //데미지 애니
             animator.SetTrigger(k_AnimOnDamagedParameter);
         }
 
         private void OnDetected()
         {
-            //???? ????
+            //상태 변경
             if(AiState == AIState.Patrol)
             {
                 AiState = AIState.Follow;
@@ -182,7 +174,7 @@ namespace Unity.FPS.AI
 
         private void OnLost()
         {
-            // 상태 변경
+            //상태 변경
             if(AiState == AIState.Follow || AiState == AIState.Attack)
             {
                 AiState = AIState.Patrol;
@@ -196,6 +188,12 @@ namespace Unity.FPS.AI
 
             //anim
             animator.SetBool(k_AnimAlertedParameter, false);
+        }
+
+        private void Attacked()
+        {
+            //애니
+            animator.SetTrigger(k_AnimAttackParameter);
         }
 
     }

@@ -1,26 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.FPS.AI
 {
     /// <summary>
-    /// Enemy ë¦¬ìŠ¤íŠ¸ë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
+    /// Enemy ¸®½ºÆ®¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class EnemyManager : MonoBehaviour
     {
         #region Variables
         public List<EnemyController> Enemies { get; private set; }
-        public int NumberOfEnemiesTotal { get; private set; }
-        public int NumberOfEnemiesRemaining => Enemies.Count;   //í˜„ì¬ ì‚´ì•„ìˆëŠ” 
-
+        public int NumberOfEnemiesTotal { get; private set; }           //ÃÑ »ı»êµÈ enemy ¼öÀÇ ÇÕ
+        public int NumberOfEnemiesRemaining => Enemies.Count;           //ÇöÀç »ì¾ÆÀÖ´Â enemy ¼öÀÇ ÇÕ
         #endregion
-        void Awake()
+
+        private void Awake()
         {
             Enemies = new List<EnemyController>();
         }
 
-        //ë“±ë¡
+        //µî·Ï
         public void RegisterEnemy(EnemyController newEnemy)
         {
             Enemies.Add(newEnemy);
@@ -28,7 +27,7 @@ namespace Unity.FPS.AI
             NumberOfEnemiesTotal++;
         }
 
-        //ì œê±°
+        //Á¦°Å
         public void RemoveEnemy(EnemyController killedEnemy)
         {
             Enemies.Remove(killedEnemy);

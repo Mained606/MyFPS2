@@ -4,61 +4,61 @@ using UnityEngine.Events;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½
+    /// Ã¼·ÂÀ» °ü¸®ÇÏ´Â Å¬·¡½º
     /// </summary>
     public class Health : MonoBehaviour
     {
         #region Variables
-        [SerializeField] private float maxHealth = 100f;    //ï¿½Ö´ï¿½ Hp
-        public float CurrentHealth { get; private set; }    //ï¿½ï¿½ï¿½ï¿½ Hp
-        private bool isDeath = false;                       //ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+        [SerializeField] private float maxHealth = 100f;    //ÃÖ´ë Hp
+        public float CurrentHealth { get; private set; }    //ÇöÀç Hp
+        private bool isDeath = false;                       //Á×À½ Ã¼Å©
 
         public UnityAction<float, GameObject> OnDamaged;
         public UnityAction OnDie;
         public UnityAction<float> OnHeal;
 
-        //Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+        //Ã¼·Â À§Çè °æ°èÀ²
         [SerializeField] private float criticalHealRatio = 0.3f;
 
-        //ï¿½ï¿½ï¿½ï¿½
+        //¹«Àû
         public bool Invincible { get; private set; }
         #endregion
 
-        //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ Ã¼Å©
+        //Èú ¾ÆÀÌÅÛÀ» ¸ÔÀ»¼ö ÀÖ´ÂÁö Ã¼Å©
         public bool CanPickUp() => CurrentHealth < maxHealth;
-        //UI HP ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+        //UI HP °ÔÀÌÁö °ª
         public float GetRatio() => CurrentHealth / maxHealth;
-        //ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+        //À§Çè Ã¼Å©
         public bool IsCritical() => GetRatio() <= criticalHealRatio;
 
 
         private void Start()
         {
-            //ï¿½Ê±ï¿½È­
+            //ÃÊ±âÈ­
             CurrentHealth = maxHealth;
             Invincible = false;
         }
 
-        //ï¿½ï¿½
+        //Èú
         public void Heal(float amount)
         {
             float beforeHealth = CurrentHealth;
             CurrentHealth += amount;
             CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, maxHealth);
 
-            //real Heal ï¿½ï¿½ï¿½Ï±ï¿½
+            //real Heal ±¸ÇÏ±â
             float realHeal = CurrentHealth - beforeHealth;
             if (realHeal > 0f)
             {
-                //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+                //Èú ±¸Çö
                 OnHeal?.Invoke(realHeal);
             }
         }
 
-        //damageSource: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Ã¼
+        //damageSource: µ¥¹ÌÁö¸¦ ÁÖ´Â ÁÖÃ¼
         public void TakeDamage(float damage, GameObject damageSource)
         {
-            //ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+            //¹«Àû Ã¼Å©
             if (Invincible)
                 return;
 
@@ -67,22 +67,22 @@ namespace Unity.FPS.Game
             CurrentHealth = Mathf.Clamp(CurrentHealth, 0f, maxHealth);
             //Debug.Log($"{gameObject.name} CurrentHealth: {CurrentHealth}");
 
-            //real Damage ï¿½ï¿½ï¿½Ï±ï¿½
+            //real Damage ±¸ÇÏ±â
             float realDamage = beforeHealth - CurrentHealth;
             if (realDamage > 0f)
             {
-                //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½                
+                //µ¥¹ÌÁö ±¸Çö                
                 OnDamaged?.Invoke(realDamage, damageSource);
             }
 
-            //ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
+            //Á×À½ Ã³¸®
             HandleDeath();
         }
 
-        //ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //Á×À½ Ã³¸® °ü¸®
         void HandleDeath()
         {
-            //ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+            //Á×À½ Ã¼Å©
             if (isDeath)
                 return;
 
@@ -90,8 +90,8 @@ namespace Unity.FPS.Game
             {
                 isDeath = true;
 
-                //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-                // OnDie?.Invoke();
+                //Á×À½ ±¸Çö
+                OnDie?.Invoke();
             }
         }
     }

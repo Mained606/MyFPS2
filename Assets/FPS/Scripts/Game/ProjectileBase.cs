@@ -4,23 +4,23 @@ using UnityEngine.Events;
 namespace Unity.FPS.Game
 {
     /// <summary>
-    /// ë°œì‚¬ì²´ì˜ ê¸°ë³¸ì´ ë˜ëŠ” ë¶€ëª¨ í´ë˜ìŠ¤
+    /// ¹ß»çÃ¼ÀÇ ±âº»ÀÌ µÇ´Â ºÎ¸ğ Å¬·¡½º
     /// </summary>
     public abstract class ProjectileBase : MonoBehaviour
     {
         #region Variables
-        public GameObject Owner { get; private set; }   //ë°œì‚¬í•œ ì£¼ì²´
+        public GameObject Owner { get; private set; }   //¹ß»çÇÑ ÁÖÃ¼
         public Vector3 InitialPosition { get; private set; }
         public Vector3 InitialDirection { get; private set; }
         public Vector3 InheritedMuzzleVelocity { get; private set; }
         public float InitialCharge { get; private set; }
 
-        public UnityAction OnShoot;                     //ë°œì‚¬ì‹œ ë“±ë¡ëœ í•¨ìˆ˜ í˜¸ì¶œ
+        public UnityAction OnShoot;                     //¹ß»ç½Ã µî·ÏµÈ ÇÔ¼ö È£Ãâ
         #endregion
 
         public void Shoot(WeaponController controller)
         {
-            //ì´ˆê¸°í™”
+            //ÃÊ±âÈ­
             Owner = controller.Owner;
             InitialPosition = this.transform.position;
             InitialDirection = this.transform.forward;
